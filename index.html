@@ -1,0 +1,2133 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Gonitwa</title>
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b0f0e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gonitwa">
+<style>
+:root {
+  --bg: #0b0f0e; --panel: #141b19; --panel2: #1c2623; --line: #2a3733;
+  --text: #eef3ee; --dim: #8fa39b;
+  --acid: #d7ff3e; --hunt: #ff6b3d; --run: #35e0c2; --danger: #ff3b5c;
+  --cond: "Roboto Condensed", sans-serif-condensed, "Arial Narrow", sans-serif;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
+  font: 16px/1.4 Roboto, system-ui, sans-serif; overscroll-behavior: none; }
+[hidden] { display: none !important; }
+button, input, select { font: inherit; color: inherit; }
+h1, h2, h3 { font-family: var(--cond); text-transform: uppercase; letter-spacing: .04em; margin: 0; }
+.dim { color: var(--dim); }
+.c-hunt { color: var(--hunt); } .c-run { color: var(--run); }
+.center-text { text-align: center; }
+
+.screen { display: none; min-height: 100%; padding: 20px 18px 28px; max-width: 560px; margin: 0 auto; }
+.screen.on { display: block; }
+.screen.center.on { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; }
+
+/* ---------- buttons & fields ---------- */
+.btn { border: 1px solid var(--line); background: var(--panel2); border-radius: 12px; padding: 12px 16px;
+  font-family: var(--cond); text-transform: uppercase; letter-spacing: .06em; font-weight: 700; font-size: 15px;
+  position: relative; touch-action: manipulation; }
+.btn:active { transform: translateY(1px); filter: brightness(1.15); }
+.btn[disabled] { opacity: .4; }
+.btn.acid { background: var(--acid); color: #10150a; border-color: var(--acid); }
+.btn.danger { background: transparent; color: var(--danger); border-color: var(--danger); }
+.btn.ghost { background: transparent; color: var(--dim); }
+.btn.big { width: 100%; padding: 17px; font-size: 19px; }
+.btn.small { padding: 8px 12px; font-size: 13px; border-radius: 10px; }
+.field { display: block; margin: 22px 0 14px; }
+.field span, .eyebrow { display: block; font-family: var(--cond); text-transform: uppercase; letter-spacing: .14em;
+  font-size: 12px; color: var(--dim); margin-bottom: 6px; }
+input[type=text], input:not([type]), .field input, .join-row input, .chat-form input {
+  width: 100%; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px;
+  outline: none; }
+input:focus { border-color: var(--acid); }
+.error { background: rgba(255,59,92,.12); border: 1px solid rgba(255,59,92,.5); color: #ffc2cc;
+  padding: 10px 12px; border-radius: 10px; margin: 12px 0; font-size: 14px; }
+.card { background: var(--panel); border: 1px solid var(--acid); border-radius: 14px; padding: 14px; margin-top: 18px; }
+.card p { margin: 6px 0 12px; color: var(--dim); font-size: 14px; }
+
+/* ---------- home ---------- */
+.home-top { padding: 34px 0 6px; }
+.logo { font-family: var(--cond); font-weight: 900; font-size: 54px; letter-spacing: .02em; line-height: 1;
+  display: flex; align-items: center; gap: 12px; }
+.logo-dot { width: 22px; height: 22px; border-radius: 50%; background: var(--acid);
+  box-shadow: 0 0 0 7px rgba(215,255,62,.18), 0 0 0 16px rgba(215,255,62,.07); margin-left: 6px; }
+.tagline { color: var(--dim); margin: 14px 0 0; }
+.or { display: flex; align-items: center; gap: 10px; color: var(--dim); font-size: 12px; margin: 22px 0 12px;
+  font-family: var(--cond); text-transform: uppercase; letter-spacing: .14em; }
+.or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.join-row { display: flex; gap: 10px; }
+.join-row input { flex: 1; font-family: var(--cond); font-weight: 700; font-size: 22px; letter-spacing: .3em;
+  text-transform: uppercase; text-align: center; }
+.how { margin-top: 26px; color: var(--dim); font-size: 14px; }
+.how summary { font-family: var(--cond); text-transform: uppercase; letter-spacing: .14em; font-size: 12px; padding: 8px 0; }
+.how ol { padding-left: 20px; } .how li { margin: 6px 0; }
+.how .safe { border-left: 2px solid var(--acid); padding-left: 10px; }
+
+.spinner { width: 46px; height: 46px; border-radius: 50%; border: 4px solid var(--line); border-top-color: var(--acid);
+  animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- lobby ---------- */
+.lobby-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; }
+.code { font-family: var(--cond); font-weight: 900; font-size: 46px; letter-spacing: .16em; color: var(--acid); line-height: 1; }
+.head-actions { display: flex; gap: 8px; }
+.offline-bar { background: var(--danger); color: #fff; text-align: center; padding: 6px; border-radius: 8px; margin-top: 10px; font-size: 13px; }
+.teams { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+.team { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 10px; min-height: 150px; }
+.team h3 { font-size: 17px; display: flex; justify-content: space-between; }
+.team.hunt { border-top: 3px solid var(--hunt); } .team.hunt h3 { color: var(--hunt); }
+.team.run { border-top: 3px solid var(--run); } .team.run h3 { color: var(--run); }
+.team .team-btn { margin-top: auto; }
+.team .team-btn.mine { background: transparent; color: var(--dim); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { background: var(--panel2); border: 1px solid var(--line); border-radius: 999px; padding: 5px 10px; font-size: 14px;
+  display: inline-flex; align-items: center; gap: 5px; max-width: 100%; }
+.chip.me { border-color: var(--acid); }
+.chip.off { opacity: .45; }
+.chip i { font-style: normal; color: var(--acid); font-size: 12px; }
+.noteam { margin-top: 12px; }
+.sec { font-size: 14px; color: var(--dim); letter-spacing: .14em; margin: 24px 0 8px; }
+.settings, .summary { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 4px 14px; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.row.col { flex-direction: column; align-items: stretch; gap: 6px; }
+.settings > .row:last-child, .summary .row:last-child, #zone-opts > *:last-child, #shrink-opts > .row:last-child { border-bottom: 0; }
+select { background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+input[type=range] { width: 100%; accent-color: var(--acid); }
+.sw { appearance: none; -webkit-appearance: none; width: 48px; height: 28px; border-radius: 999px; background: var(--line); position: relative; flex: none; transition: background .15s; }
+.sw::after { content: ""; position: absolute; width: 22px; height: 22px; border-radius: 50%; background: #fff; top: 3px; left: 3px; transition: left .15s; }
+.sw:checked { background: var(--acid); } .sw:checked::after { left: 23px; background: #10150a; }
+.summary .row b { font-weight: 500; text-align: right; }
+.map-box { position: relative; height: 260px; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); margin: 12px 0 10px; }
+.map-box canvas { width: 100%; height: 100%; display: block; }
+.map-hint { position: absolute; left: 8px; top: 8px; background: rgba(11,15,14,.8); padding: 5px 9px; border-radius: 8px; font-size: 12px; pointer-events: none; }
+.zoom { position: absolute; right: 8px; top: 8px; display: flex; flex-direction: column; gap: 6px; }
+.zoom button { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: rgba(20,27,25,.92); font-size: 20px; }
+.chat-log { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; max-height: 130px; overflow-y: auto; font-size: 14px; min-height: 44px; }
+.chat-log.tall { max-height: 34vh; min-height: 90px; }
+.chat-log p { margin: 4px 0; } .chat-log b { color: var(--acid); font-weight: 600; } .chat-log .mine b { color: var(--dim); }
+.chat-log .empty { color: var(--dim); }
+.chat-form { display: flex; gap: 8px; margin-top: 8px; }
+.chat-form input { flex: 1; padding: 10px 12px; }
+.lobby-foot { margin-top: 26px; display: flex; flex-direction: column; gap: 12px; }
+
+/* ---------- game ---------- */
+.screen.game { padding: 0; max-width: none; position: fixed; inset: 0; }
+#game-map { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hud { position: absolute; left: 0; right: 0; top: 0; padding: 10px 10px 0; pointer-events: none;
+  background: linear-gradient(rgba(11,15,14,.92), rgba(11,15,14,0)); padding-bottom: 26px; }
+.hud-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; }
+.role { justify-self: start; font-family: var(--cond); font-weight: 900; text-transform: uppercase; letter-spacing: .1em;
+  font-size: 14px; padding: 6px 10px; border-radius: 8px; background: var(--panel2); }
+.role.H { background: var(--hunt); color: #1b0a04; } .role.R { background: var(--run); color: #03201b; }
+.role.out { background: var(--line); color: var(--dim); }
+.timer { text-align: center; line-height: 1; }
+.timer b { font-family: var(--cond); font-weight: 900; font-size: 44px; font-variant-numeric: tabular-nums; }
+.timer span { display: block; font-family: var(--cond); text-transform: uppercase; letter-spacing: .14em; font-size: 11px; color: var(--dim); margin-top: 2px; }
+.alive { justify-self: end; text-align: right; line-height: 1.1; }
+.alive b { font-family: var(--cond); font-weight: 900; font-size: 24px; color: var(--run); }
+.alive span { display: block; font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: .1em; font-family: var(--cond); }
+.chip-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.hchip { background: rgba(20,27,25,.92); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; font-size: 13px;
+  font-variant-numeric: tabular-nums; }
+.hchip b { color: var(--acid); } .hchip.bad { border-color: var(--danger); color: #ffc2cc; }
+.banner { margin: 10px auto 0; max-width: 460px; text-align: center; padding: 10px 12px; border-radius: 12px; font-weight: 600;
+  background: rgba(20,27,25,.95); border: 1px solid var(--acid); }
+.banner.bad { background: var(--danger); border-color: var(--danger); color: #fff; animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 50% { filter: brightness(1.3); } }
+.game-zoom { top: auto; bottom: 150px; }
+.bottom { position: absolute; left: 0; right: 0; bottom: 0; padding: 30px 10px 12px; display: flex; flex-direction: column; gap: 8px;
+  background: linear-gradient(rgba(11,15,14,0), rgba(11,15,14,.94) 45%); }
+.bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.btn.hold { background: var(--danger); border-color: var(--danger); color: #fff; padding: 16px; font-size: 18px; overflow: hidden; user-select: none; -webkit-user-select: none; }
+.btn.hold small { display: block; font-size: 11px; opacity: .8; letter-spacing: .14em; font-weight: 400; }
+.hold-fill { position: absolute; inset: 0; background: rgba(255,255,255,.35); transform: scaleX(0); transform-origin: left; }
+.btn.hold.holding .hold-fill { transform: scaleX(1); transition: transform 1.2s linear; }
+.hold-label { position: relative; }
+.badge { position: absolute; top: -6px; right: -4px; background: var(--acid); color: #10150a; border-radius: 999px; min-width: 20px; height: 20px;
+  font-size: 12px; line-height: 20px; padding: 0 5px; }
+.toast { position: absolute; left: 12px; right: 12px; bottom: 150px; margin: 0 auto; max-width: 440px; background: rgba(20,27,25,.97);
+  border: 1px solid var(--acid); border-radius: 12px; padding: 10px 14px; text-align: center; font-size: 15px; pointer-events: none; }
+.overlay { position: absolute; inset: 0; background: rgba(11,15,14,.88); display: flex; align-items: center; justify-content: center; text-align: center; }
+.overlay span { display: block; font-family: var(--cond); text-transform: uppercase; letter-spacing: .2em; color: var(--dim); }
+.overlay b { display: block; font-family: var(--cond); font-weight: 900; font-size: 150px; line-height: 1; color: var(--acid); }
+.overlay em { font-style: normal; font-family: var(--cond); font-weight: 900; text-transform: uppercase; letter-spacing: .08em; font-size: 26px; }
+
+/* ---------- end ---------- */
+.result { padding: 26px 0 6px; }
+.result h1 { font-size: 44px; font-weight: 900; line-height: 1; }
+.result.H h1 { color: var(--hunt); } .result.R h1 { color: var(--run); }
+.result p { color: var(--dim); margin: 10px 0 0; }
+.end-map { height: 200px; }
+.table { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 2px 14px; }
+.trow { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.trow:last-child { border-bottom: 0; }
+.trow .who { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.trow .who span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex: none; background: var(--line); }
+.dot.H { background: var(--hunt); } .dot.R { background: var(--run); }
+.tag { font-family: var(--cond); text-transform: uppercase; letter-spacing: .08em; font-size: 12px; color: var(--dim); white-space: nowrap; }
+.tag.ok { color: var(--run); } .tag.bad { color: var(--danger); }
+.trow.off { opacity: .5; }
+
+/* ---------- sheets ---------- */
+.scrim { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 20; }
+.sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 21; background: var(--bg); border-top: 1px solid var(--line);
+  border-radius: 18px 18px 0 0; padding: 14px 16px 18px; max-height: 82vh; overflow-y: auto; max-width: 560px; margin: 0 auto; }
+.sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+  font-family: var(--cond); text-transform: uppercase; letter-spacing: .1em; font-size: 18px; }
+.x { background: none; border: 0; font-size: 20px; padding: 6px 10px; color: var(--dim); }
+.sheet-foot { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.quick { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.quick button { background: var(--panel2); border: 1px solid var(--line); border-radius: 999px; padding: 6px 11px; font-size: 13px; }
+.feed { margin-top: 12px; font-size: 13px; color: var(--dim); }
+.feed p { margin: 3px 0; }
+
+#conn-sub { white-space: pre-line; font-size: 13px; max-width: 320px; word-break: break-word; }
+
+/* Start / leave buttons stay reachable without scrolling the whole lobby. */
+.lobby-foot { position: sticky; bottom: 0; padding: 18px 0 12px; margin-bottom: -12px;
+  background: linear-gradient(rgba(11,15,14,0), var(--bg) 26%); z-index: 5; }
+
+/* notch / home-indicator safe areas (iPhone, edge-to-edge browsers) */
+.screen { padding-top: calc(20px + env(safe-area-inset-top)); padding-bottom: calc(28px + env(safe-area-inset-bottom)); }
+.screen.game { padding: 0; }
+.hud { padding-top: calc(10px + env(safe-area-inset-top)); }
+.bottom { padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+.sheet { padding-bottom: calc(18px + env(safe-area-inset-bottom)); }
+.web-note { color: var(--dim); font-size: 13px; border-left: 2px solid var(--acid); padding-left: 10px; margin-top: 18px; }
+
+</style>
+</head>
+<body>
+
+<!-- ============ HOME ============ -->
+<section id="s-home" class="screen">
+  <div class="home-top">
+    <div class="logo"><span class="logo-dot"></span>GONITWA</div>
+    <p class="tagline">Chowany na prawdziwej mapie. Łowcy kontra uciekinierzy.</p>
+  </div>
+  <div class="card" id="perm-card" hidden>
+    <b>Potrzebna lokalizacja</b>
+    <p id="perm-text">Gra pokazuje graczy na mapie, więc wymaga dostępu do lokalizacji i powiadomień.</p>
+    <button class="btn acid" id="perm-btn">Zezwól</button>
+  </div>
+  <label class="field">
+    <span>Twoje imię</span>
+    <input id="name" maxlength="16" autocomplete="off" placeholder="np. Kuba">
+  </label>
+  <button class="btn acid big" id="create">Załóż grę</button>
+  <div class="or"><span>albo dołącz kodem</span></div>
+  <div class="join-row">
+    <input id="code" maxlength="7" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="KOD GRY">
+    <button class="btn" id="join">Dołącz</button>
+  </div>
+  <div class="error" id="home-error" hidden></div>
+  <p class="web-note" id="web-note" hidden>Wersja przeglądarkowa: podczas rundy trzymaj tę stronę otwartą i ekran włączony – po zablokowaniu telefonu przeglądarka przestaje wysyłać pozycję.</p>
+  <details class="how">
+    <summary>Jak grać</summary>
+    <ol>
+      <li>Jedna osoba zakłada grę i podaje reszcie 6-znakowy kod.</li>
+      <li>Dzielicie się na <b class="c-hunt">łowców</b> i <b class="c-run">uciekinierów</b>. Gospodarz ustawia czas, fory, pingi i strefę.</li>
+      <li>Uciekinierzy dostają fory na ukrycie się. Potem łowcy ruszają.</li>
+      <li>Co kilka minut łowcy dostają <b>ping</b> – ostatnią pozycję każdego uciekiniera.</li>
+      <li>Kto wyjdzie poza strefę na zbyt długo, jest widoczny dla łowców na żywo.</li>
+      <li>Złapany uciekinier potwierdza to w aplikacji. Wygrywają ci, którzy dotrwają do końca – albo łowcy, jeśli złapią wszystkich.</li>
+    </ol>
+    <p class="safe">Grajcie w bezpiecznym miejscu, uważajcie na ruch uliczny i nie wchodźcie na teren prywatny.</p>
+  </details>
+</section>
+
+<!-- ============ CONNECTING ============ -->
+<section id="s-connecting" class="screen center">
+  <div class="spinner"></div>
+  <h2 id="conn-title">Łączenie…</h2>
+  <p class="dim" id="conn-sub"></p>
+  <div class="error" id="conn-error" hidden></div>
+  <button class="btn" id="conn-cancel">Anuluj</button>
+</section>
+
+<!-- ============ LOBBY ============ -->
+<section id="s-lobby" class="screen">
+  <header class="lobby-head">
+    <div>
+      <div class="eyebrow">Kod gry</div>
+      <div class="code" id="lobby-code">------</div>
+    </div>
+    <div class="head-actions">
+      <button class="btn small" id="share">Udostępnij</button>
+      <button class="btn small ghost" id="lobby-leave">Wyjdź</button>
+    </div>
+  </header>
+  <div class="offline-bar" id="lobby-offline" hidden>Brak połączenia – ponawiam…</div>
+  <div class="error" id="lobby-error" hidden></div>
+
+  <div class="teams">
+    <div class="team hunt">
+      <h3>Łowcy <span id="cnt-h"></span></h3>
+      <div class="chips" id="team-h"></div>
+      <button class="btn small team-btn" data-team="H">Dołącz</button>
+    </div>
+    <div class="team run">
+      <h3>Uciekinierzy <span id="cnt-r"></span></h3>
+      <div class="chips" id="team-r"></div>
+      <button class="btn small team-btn" data-team="R">Dołącz</button>
+    </div>
+  </div>
+  <div class="noteam" id="noteam-wrap" hidden>
+    <span class="eyebrow">Bez drużyny</span>
+    <div class="chips" id="team-none"></div>
+  </div>
+
+  <h3 class="sec">Zasady rundy</h3>
+  <div id="settings-host" class="settings" hidden>
+    <label class="row"><span>Czas polowania</span>
+      <select id="set-round"></select></label>
+    <label class="row"><span>Fory dla uciekinierów</span>
+      <select id="set-head"></select></label>
+    <label class="row"><span>Ping pozycji</span>
+      <select id="set-ping"></select></label>
+    <label class="row"><span>Złapani dołączają do łowców</span>
+      <input type="checkbox" id="set-convert" class="sw"></label>
+    <label class="row"><span>Strefa gry</span>
+      <input type="checkbox" id="set-zone" class="sw"></label>
+    <div id="zone-opts" hidden>
+      <label class="row col"><span>Promień strefy: <b id="lbl-radius"></b></span>
+        <input type="range" id="set-radius" min="50" max="2000" step="10"></label>
+      <label class="row"><span>Czas na powrót do strefy</span>
+        <select id="set-grace"></select></label>
+      <label class="row"><span>Strefa się kurczy</span>
+        <input type="checkbox" id="set-shrink" class="sw"></label>
+      <div id="shrink-opts" hidden>
+        <label class="row"><span>Kurczy się co</span>
+          <select id="set-shrinksec"></select></label>
+        <label class="row col"><span>Promień na końcu: <b id="lbl-final"></b></span>
+          <input type="range" id="set-final" min="20" max="2000" step="10"></label>
+      </div>
+    </div>
+  </div>
+  <div id="settings-guest" class="summary" hidden></div>
+
+  <div id="zone-map-wrap" hidden>
+    <div class="map-box"><canvas id="zone-map"></canvas>
+      <div class="map-hint" id="zone-hint"></div>
+      <div class="zoom"><button data-z="1">+</button><button data-z="-1">−</button></div>
+    </div>
+    <button class="btn small" id="zone-here" hidden>Środek strefy = moja pozycja</button>
+  </div>
+
+  <h3 class="sec">Czat</h3>
+  <div class="chat-log" id="lobby-chat"></div>
+  <form class="chat-form" id="lobby-chat-form">
+    <input id="lobby-chat-input" maxlength="200" autocomplete="off" placeholder="Napisz do wszystkich…">
+    <button class="btn small" type="submit">Wyślij</button>
+  </form>
+
+  <div class="lobby-foot">
+    <button class="btn acid big" id="start" hidden>Start rundy</button>
+    <p class="dim center-text" id="wait-host" hidden></p>
+  </div>
+</section>
+
+<!-- ============ GAME ============ -->
+<section id="s-game" class="screen game">
+  <canvas id="game-map"></canvas>
+  <div class="hud">
+    <div class="hud-row">
+      <div class="role" id="hud-role"></div>
+      <div class="timer"><b id="hud-time">0:00</b><span id="hud-time-label"></span></div>
+      <div class="alive"><b id="hud-alive"></b><span>uciekinierów</span></div>
+    </div>
+    <div class="chip-row" id="hud-chips"></div>
+    <div class="banner" id="hud-banner" hidden></div>
+  </div>
+  <div class="zoom game-zoom"><button data-z="1">+</button><button data-z="-1">−</button><button id="follow" title="Wyśrodkuj">◎</button></div>
+  <div class="toast" id="toast" hidden></div>
+  <div class="bottom">
+    <button class="btn hold" id="tagged" hidden><span class="hold-fill"></span><span class="hold-label">Złapali mnie <small>przytrzymaj</small></span></button>
+    <div class="bottom-row">
+      <button class="btn" id="open-chat">Czat<span class="badge" id="chat-badge" hidden></span></button>
+      <button class="btn" id="open-roster">Gracze</button>
+    </div>
+  </div>
+  <div class="overlay" id="countdown" hidden><div><span id="countdown-label">Start za</span><b id="countdown-num">5</b><em id="countdown-role"></em></div></div>
+</section>
+
+<!-- ============ END ============ -->
+<section id="s-end" class="screen">
+  <div class="result" id="end-result">
+    <div class="eyebrow" id="end-round"></div>
+    <h1 id="end-title"></h1>
+    <p id="end-sub"></p>
+  </div>
+  <div class="map-box end-map"><canvas id="end-map"></canvas></div>
+  <h3 class="sec">Uciekinierzy</h3>
+  <div class="table" id="end-runners"></div>
+  <h3 class="sec">Łowcy</h3>
+  <div class="chips" id="end-hunters"></div>
+  <div class="lobby-foot">
+    <button class="btn acid big" id="end-lobby" hidden>Nowa runda</button>
+    <p class="dim center-text" id="end-wait" hidden>Gospodarz zdecyduje o kolejnej rundzie.</p>
+    <button class="btn ghost" id="end-leave">Wyjdź z gry</button>
+  </div>
+</section>
+
+<!-- ============ SHEETS ============ -->
+<div class="scrim" id="scrim" hidden></div>
+<div class="sheet" id="sheet-chat" hidden>
+  <div class="sheet-head"><b id="chat-title">Czat drużyny</b><button class="x" data-close>✕</button></div>
+  <div class="chat-log tall" id="game-chat"></div>
+  <div class="quick" id="quick"></div>
+  <form class="chat-form" id="game-chat-form">
+    <input id="game-chat-input" maxlength="200" autocomplete="off" placeholder="Wiadomość do drużyny…">
+    <button class="btn small" type="submit">Wyślij</button>
+  </form>
+</div>
+<div class="sheet" id="sheet-roster" hidden>
+  <div class="sheet-head"><b>Gracze</b><button class="x" data-close>✕</button></div>
+  <div class="table" id="roster"></div>
+  <div class="feed" id="feed"></div>
+  <div class="sheet-foot">
+    <button class="btn danger" id="end-round-btn" hidden>Zakończ rundę</button>
+    <button class="btn ghost" id="game-leave">Wyjdź z gry</button>
+  </div>
+</div>
+<div class="sheet" id="sheet-player" hidden>
+  <div class="sheet-head"><b id="player-name"></b><button class="x" data-close>✕</button></div>
+  <div class="sheet-foot" id="player-actions"></div>
+</div>
+
+<script>
+/* Gonitwa – browser engine (iPhone / any browser). A JavaScript port of pl.gonitwa.core.GameEngine that
+ * speaks exactly the same protocol as the Android app (same brokers, topics, AES-GCM key from the game code),
+ * so browser players and Android players meet in the same game. Exposes the same "Native" bridge the UI uses. */
+(function () {
+  'use strict';
+  if (window.Native) return;                                   // inside the Android app: the real engine is used
+  var qs = new URLSearchParams(location.search);
+  if (qs.get('s')) return;                                     // desktop test harness drives the Java engine instead
+
+  var HUNTER = 'H', RUNNER = 'R';
+  var NONE = 0, CREATING = 1, JOINING = 2, IN = 3;
+  var SYNC_MS = 1800, COUNTDOWN_MS = 8000;
+  var ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  // Same order as GameEngine.defaultEndpoints(): index N here is the WebSocket door of TCP endpoint N there.
+  var ENDPOINTS = [
+    'wss://broker.emqx.io:8084/mqtt',
+    'wss://broker.hivemq.com:8884/mqtt',
+    'wss://test.mosquitto.org:8081/mqtt',
+    'wss://broker.emqx.io:8084/mqtt',
+    'wss://broker.hivemq.com:8884/mqtt',
+    'wss://test.mosquitto.org:8081/mqtt'
+  ];
+  var CREATE_ORDER = [0, 1, 2];
+  if (qs.get('ws')) { ENDPOINTS = ENDPOINTS.map(function () { return qs.get('ws'); }); }   // tests: one local broker
+  var enc = new TextEncoder(), dec = new TextDecoder();
+
+  // ------------------------------------------------------------------ storage
+  var mem = {};
+  function load(k) { try { var v = localStorage.getItem('gonitwa.' + k); return v == null ? (k in mem ? mem[k] : null) : v; } catch (e) { return k in mem ? mem[k] : null; } }
+  function save(k, v) { mem[k] = v; try { localStorage.setItem('gonitwa.' + k, v); } catch (e) { /* private mode */ } }
+  function now() { return Date.now(); }
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+  function int(m, k, d) { var v = m ? m[k] : undefined; return typeof v === 'number' && isFinite(v) ? Math.trunc(v) : d; }
+  function num(m, k, d) { var v = m ? m[k] : undefined; return typeof v === 'number' && isFinite(v) ? v : d; }
+  function str(m, k, d) { var v = m ? m[k] : undefined; return typeof v === 'string' ? v : d; }
+  function bool(m, k, d) { var v = m ? m[k] : undefined; return typeof v === 'boolean' ? v : d; }
+  function hex(buf) { var b = new Uint8Array(buf), s = ''; for (var i = 0; i < b.length; i++) s += (b[i] < 16 ? '0' : '') + b[i].toString(16); return s; }
+  function randomId(n) { var b = new Uint8Array(Math.ceil(n / 2)); crypto.getRandomValues(b); return hex(b).substring(0, n); }
+  function rnd(n) { var b = new Uint32Array(1); crypto.getRandomValues(b); return b[0] % n; }
+  function distance(lat1, lon1, lat2, lon2) {
+    var r = 6371000, p1 = lat1 * Math.PI / 180, p2 = lat2 * Math.PI / 180, dp = p2 - p1, dl = (lon2 - lon1) * Math.PI / 180;
+    var a = Math.sin(dp / 2) * Math.sin(dp / 2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dl / 2) * Math.sin(dl / 2);
+    return 2 * r * Math.asin(Math.min(1, Math.sqrt(a)));
+  }
+
+  // ------------------------------------------------------------------ code + crypto
+  function newCode(brokerIdx, count) {
+    var first;
+    do { first = rnd(ALPHABET.length); } while (first % count !== brokerIdx);
+    var s = ALPHABET.charAt(first);
+    for (var i = 1; i < 6; i++) s += ALPHABET.charAt(rnd(ALPHABET.length));
+    return s;
+  }
+  function brokerIndex(code, count) { var i = ALPHABET.indexOf(code.charAt(0)); return i < 0 ? 0 : i % count; }
+  function normalizeCode(raw) {
+    if (raw == null) return null;
+    var s = '', up = String(raw).toUpperCase();
+    for (var i = 0; i < up.length; i++) {
+      var ch = up.charAt(i);
+      if (ch === ' ' || ch === '-') continue;
+      if (ALPHABET.indexOf(ch) < 0) return null;
+      s += ch;
+    }
+    return s.length === 6 ? s : null;
+  }
+  function makeCrypto(code) {
+    return Promise.all([
+      crypto.subtle.digest('SHA-256', enc.encode('gonitwa-key-v1:' + code)),
+      crypto.subtle.digest('SHA-256', enc.encode('gonitwa-topic-v1:' + code))
+    ]).then(function (r) {
+      return crypto.subtle.importKey('raw', r[0], 'AES-GCM', false, ['encrypt', 'decrypt']).then(function (key) {
+        return {
+          topicId: hex(r[1]).substring(0, 24),
+          encrypt: function (plain) {
+            var iv = new Uint8Array(12);
+            crypto.getRandomValues(iv);
+            return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv, tagLength: 128 }, key, enc.encode(plain)).then(function (ct) {
+              var out = new Uint8Array(12 + ct.byteLength);
+              out.set(iv, 0); out.set(new Uint8Array(ct), 12);
+              return out;
+            });
+          },
+          decrypt: function (data) {
+            if (!data || data.length < 28) return Promise.resolve(null);
+            return crypto.subtle.decrypt({ name: 'AES-GCM', iv: data.subarray(0, 12), tagLength: 128 }, key, data.subarray(12))
+              .then(function (pt) { return dec.decode(pt); }, function () { return null; });
+          }
+        };
+      });
+    });
+  }
+
+  // ------------------------------------------------------------------ MQTT 3.1.1 over WebSocket (QoS 0)
+  function mqttStr(s) { var b = enc.encode(s), r = new Uint8Array(b.length + 2); r[0] = b.length >> 8; r[1] = b.length & 255; r.set(b, 2); return r; }
+  function packet(header, body) {
+    var len = body.length, lenBytes = [];
+    do { var d = len % 128; len = Math.floor(len / 128); if (len > 0) d |= 0x80; lenBytes.push(d); } while (len > 0);
+    var out = new Uint8Array(1 + lenBytes.length + body.length);
+    out[0] = header; out.set(lenBytes, 1); out.set(body, 1 + lenBytes.length);
+    return out;
+  }
+  function concat(a, b) { var r = new Uint8Array(a.length + b.length); r.set(a, 0); r.set(b, a.length); return r; }
+
+  function Link(url, clientId, filter, listener) {
+    this.url = url; this.clientId = clientId; this.filter = filter; this.listener = listener;
+    this.up = false; this.closed = false; this.dead = false; this.failures = 0;
+    this.ws = null; this.buf = new Uint8Array(0); this.timer = null; this.ping = null; this.lastWrite = 0;
+    this.inq = Promise.resolve();
+  }
+  Link.prototype.start = function () { this._connect(); };
+  Link.prototype.isUp = function () { return this.up; };
+  Link.prototype._connect = function () {
+    if (this.closed) return;
+    var self = this, ws;
+    try { ws = new WebSocket(this.url, 'mqtt'); } catch (e) { this._down('WebSocket: ' + e.message); return; }
+    this.ws = ws;
+    ws.binaryType = 'arraybuffer';
+    this.buf = new Uint8Array(0);
+    var opened = false;
+    var guard = setTimeout(function () { if (!self.up && ws === self.ws) { try { ws.close(); } catch (e) { } self._down('timeout'); } }, 9000);
+    ws.onopen = function () {
+      opened = true;
+      var vh = concat(concat(mqttStr('MQTT'), new Uint8Array([4, 0x02, 0, 30])), mqttStr(self.clientId));
+      ws.send(packet(0x10, vh));
+    };
+    ws.onmessage = function (ev) {
+      if (ws !== self.ws) return;
+      self.buf = concat(self.buf, new Uint8Array(ev.data));
+      self._drain();
+    };
+    ws.onerror = function () { /* onclose follows */ };
+    ws.onclose = function (ev) {
+      clearTimeout(guard);
+      if (ws !== self.ws) return;
+      self._down(opened ? 'połączenie zamknięte (' + ev.code + ')' : 'nie można połączyć');
+    };
+  };
+  Link.prototype._drain = function () {
+    var self = this;
+    while (true) {
+      var b = this.buf;
+      if (b.length < 2) return;
+      var len = 0, mult = 1, i = 1, done = false;
+      for (; i < 5 && i < b.length; i++) { len += (b[i] & 0x7f) * mult; mult *= 128; if ((b[i] & 0x80) === 0) { done = true; i++; break; } }
+      if (!done) { if (i >= 5) { this.ws.close(); } return; }
+      if (b.length < i + len) return;
+      var h = b[0], body = b.subarray(i, i + len);
+      this.buf = b.subarray(i + len);
+      var type = h >> 4;
+      if (type === 2) {                                   // CONNACK
+        if (body.length < 2 || body[1] !== 0) { this.ws.close(); return; }
+        var sub = concat(concat(new Uint8Array([0, 1]), mqttStr(this.filter)), new Uint8Array([0]));
+        this.ws.send(packet(0x82, sub));
+      } else if (type === 9) {                            // SUBACK
+        this.up = true; this.failures = 0; this.lastWrite = now();
+        clearInterval(this.ping);
+        this.ping = setInterval(function () {
+          if (self.up && now() - self.lastWrite >= 15000) { try { self.ws.send(new Uint8Array([0xC0, 0])); self.lastWrite = now(); } catch (e) { } }
+        }, 5000);
+        this.listener.onUp(this);
+      } else if (type === 3) {                            // PUBLISH
+        var qos = (h >> 1) & 3, tl = (body[0] << 8) | body[1];
+        var topic = dec.decode(body.subarray(2, 2 + tl));
+        var payload = body.slice(2 + tl + (qos > 0 ? 2 : 0));
+        this.listener.onMessage(this, topic, payload, (h & 1) !== 0);
+      }
+    }
+  };
+  Link.prototype._down = function (why) {
+    var wasUp = this.up, self = this;
+    this.up = false;
+    clearInterval(this.ping);
+    if (this.ws) { this.ws.onclose = this.ws.onmessage = this.ws.onopen = null; try { this.ws.close(); } catch (e) { } this.ws = null; }
+    if (this.closed) return;
+    this.failures = wasUp ? 1 : this.failures + 1;
+    this.listener.onDown(this, why);
+    clearTimeout(this.timer);
+    this.timer = setTimeout(function () { self._connect(); }, Math.min(8000, 1000 * this.failures));
+  };
+  Link.prototype.publish = function (topic, payload, retain) {
+    if (!this.up || this.closed || !this.ws) return;
+    try {
+      this.ws.send(packet(0x30 | (retain ? 1 : 0), concat(mqttStr(topic), payload || new Uint8Array(0))));
+      this.lastWrite = now();
+    } catch (e) { /* will reconnect */ }
+  };
+  Link.prototype.close = function () {
+    this.closed = true; this.up = false; this.dead = true;
+    clearTimeout(this.timer); clearInterval(this.ping);
+    var ws = this.ws;
+    if (ws) { ws.onclose = ws.onmessage = null; setTimeout(function () { try { ws.close(); } catch (e) { } }, 300); }
+  };
+
+  // ------------------------------------------------------------------ settings / game records
+  function defaults() {
+    return { roundSec: 1200, headSec: 120, pingSec: 180, zoneOn: false, zLat: 0, zLon: 0, zRadius: 300,
+      shrinkOn: false, shrinkSec: 300, zFinal: 100, graceSec: 30, convert: false };
+  }
+  function settingsFrom(m, base) {
+    base = base || defaults();
+    var s = {};
+    s.roundSec = clamp(int(m, 'roundSec', base.roundSec), 10, 6 * 3600);
+    s.headSec = clamp(int(m, 'headSec', base.headSec), 0, 3600);
+    s.pingSec = clamp(int(m, 'pingSec', base.pingSec), 0, 3600);
+    if (s.pingSec > 0 && s.pingSec < 5) s.pingSec = 5;
+    s.zoneOn = bool(m, 'zoneOn', base.zoneOn);
+    s.zLat = num(m, 'zLat', base.zLat);
+    s.zLon = num(m, 'zLon', base.zLon);
+    s.zRadius = clamp(int(m, 'zRadius', base.zRadius), 20, 20000);
+    s.shrinkOn = bool(m, 'shrinkOn', base.shrinkOn);
+    s.shrinkSec = clamp(int(m, 'shrinkSec', base.shrinkSec), 5, 3600);
+    s.zFinal = clamp(int(m, 'zFinal', base.zFinal), 10, s.zRadius);
+    s.graceSec = clamp(int(m, 'graceSec', base.graceSec), 0, 600);
+    s.convert = bool(m, 'convert', base.convert);
+    return s;
+  }
+  function newGame() { return { hostId: '', hostName: '', phase: 'lobby', round: 0, rev: 0, startAt: 0, endedAt: 0, winner: '', reason: '', s: defaults() }; }
+  function gameFrom(m) {
+    return { hostId: str(m, 'hostId', ''), hostName: str(m, 'hostName', ''), phase: str(m, 'phase', 'lobby'), round: int(m, 'round', 0),
+      rev: int(m, 'rev', 0), startAt: int(m, 'startAt', 0), endedAt: int(m, 'endedAt', 0), winner: str(m, 'winner', ''),
+      reason: str(m, 'reason', ''), s: settingsFrom(m && typeof m.s === 'object' ? m.s : null, null) };
+  }
+  function huntAt(g) { return g.startAt + g.s.headSec * 1000; }
+  function endAt(g) { return huntAt(g) + g.s.roundSec * 1000; }
+  function newPlayer(id, name) { return { id: id, name: name || '?', team: '', orig: '', alive: true, taggedAt: 0, round: 0, seq: 0, seenLocal: 0 }; }
+
+  // ------------------------------------------------------------------ state
+  var myId = load('pid');
+  if (!myId || myId.length !== 10) { myId = randomId(10); save('pid', myId); }
+  var myName = load('name') || '';
+  var lastSettings = null;
+  try { var ls = load('settings'); if (ls) lastSettings = settingsFrom(JSON.parse(ls), null); } catch (e) { lastSettings = null; }
+
+  var mode = NONE, code = '', cr = null, base = '', link = null, epIdx = 0, createTry = 0;
+  var attemptAt = 0, syncUntil = 0, collision = false, cycleFails = 0;
+  var game = null, players = {}, me = newPlayer(myId, myName), pendingSelf = null;
+  var locs = {}, pingRecs = {}, pingSnap = {}, outsideSince = {}, exposedSeen = {};
+  var myFix = null, myFixLocal = 0;
+  var offSamples = [], clockOffset = 0;
+  var chat = [], feed = [], error = '', errorAt = 0, lastDown = '';
+  var lastHeartbeat = 0, lastBeacon = 0, lastGamePub = 0, lastLocPub = 0;
+  var announcedSub = '', lastPingIdx = 0, lastShrinkIdx = 0, endAnnouncedRound = -1, caughtTicks = 0;
+  var meOutside = false, meExposed = false, lastInGame = false, lastRunning = false;
+
+  // ------------------------------------------------------------------ platform (browser)
+  var geo = { state: load('geo') === 'granted' ? 'granted' : 'unknown', watch: null };
+  var wake = { want: false, lock: null };
+  function alertUser(kind, text) {
+    var p = kind === 'chat' ? [60] : kind === 'ping' ? [120, 120, 120] : kind === 'zone' ? [350, 150, 350]
+      : kind === 'tag' ? [200, 100, 200, 100, 200] : kind === 'end' ? [700, 200, 700] : [400];
+    try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) { /* iOS has no vibration API */ }
+    void text;
+  }
+  function onPos(pos) {
+    geo.state = 'granted'; save('geo', 'granted');
+    myFix = { lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy || 50, t: hostNow() };
+    myFixLocal = now();
+  }
+  function onPosErr(err) { if (err && err.code === 1) { geo.state = 'denied'; save('geo', 'denied'); } }
+  function startTracking() {
+    if (geo.watch != null || !navigator.geolocation) return;
+    geo.watch = navigator.geolocation.watchPosition(onPos, onPosErr, { enableHighAccuracy: true, maximumAge: 2000, timeout: 30000 });
+  }
+  function stopTracking() {
+    if (geo.watch != null && navigator.geolocation) navigator.geolocation.clearWatch(geo.watch);
+    geo.watch = null;
+  }
+  function applyWake() {
+    if (!navigator.wakeLock) return;
+    if (wake.want && !wake.lock && document.visibilityState === 'visible') {
+      navigator.wakeLock.request('screen').then(function (l) {
+        wake.lock = l;
+        l.addEventListener('release', function () { wake.lock = null; });
+        if (!wake.want) l.release();
+      }, function () { });
+    } else if (!wake.want && wake.lock) { wake.lock.release(); wake.lock = null; }
+  }
+  document.addEventListener('visibilitychange', function () { applyWake(); if (document.visibilityState === 'visible') tick(); });
+  function sessionChanged(inGame) { if (inGame) startTracking(); else stopTracking(); }
+
+  // ------------------------------------------------------------------ commands
+  function command(json) {
+    var m; try { m = JSON.parse(json); } catch (e) { return; }
+    if (!m || typeof m !== 'object') return;
+    var c = str(m, 'cmd', '');
+    if (c === 'setName') setName(str(m, 'name', ''));
+    else if (c === 'create') create();
+    else if (c === 'join') join(str(m, 'code', ''));
+    else if (c === 'leave') leave(null);
+    else if (c === 'team') chooseTeam(str(m, 'team', ''));
+    else if (c === 'settings') hostSettings(m.s && typeof m.s === 'object' ? m.s : null);
+    else if (c === 'start') hostStart();
+    else if (c === 'end') hostEnd();
+    else if (c === 'lobby') hostLobby();
+    else if (c === 'tagged') tagged();
+    else if (c === 'chat') sendChat(str(m, 'text', ''));
+    else if (c === 'assign') hostCmd(str(m, 'id', ''), { team: str(m, 'team', '') });
+    else if (c === 'kick') hostCmd(str(m, 'id', ''), { kick: true });
+    else if (c === 'revive') hostCmd(str(m, 'id', ''), { revive: true });
+    else if (c === 'clearError') error = '';
+  }
+  function setName(name) {
+    name = (name || '').trim();
+    if (name.length > 16) name = name.substring(0, 16);
+    myName = name; save('name', name);
+    if (mode === IN) { me.name = name; if (isHost()) { game.hostName = name; publishGame(); } publishSelf(); }
+  }
+  function create() {
+    if (mode !== NONE) return;
+    if (!myName) { fail('Najpierw wpisz swoje imię.'); return; }
+    resetSession();
+    mode = CREATING; createTry = 0; epIdx = CREATE_ORDER[0]; cycleFails = 0;
+    openLink(newCode(epIdx, ENDPOINTS.length));
+    notifySession();
+  }
+  function join(raw) {
+    if (mode !== NONE) return;
+    if (!myName) { fail('Najpierw wpisz swoje imię.'); return; }
+    var c = normalizeCode(raw);
+    if (c == null) { fail('Kod gry ma 6 znaków (litery i cyfry).'); return; }
+    resetSession();
+    mode = JOINING; epIdx = brokerIndex(c, ENDPOINTS.length);
+    openLink(c);
+    notifySession();
+  }
+  function leave(message) {
+    if (mode === NONE) return;
+    if (link) {
+      link.dead = true;                                    // nothing queued earlier may land after the farewell
+      if (mode === IN) {
+        link.publish(base + 'p/' + myId, null, true);
+        link.publish(base + 'pg/' + myId, null, true);
+        if (isHost()) {
+          for (var id in players) { link.publish(base + 'p/' + id, null, true); link.publish(base + 'pg/' + id, null, true); }
+          link.publish(base + 'g', null, true);
+        }
+      }
+      link.close(); link = null;
+    }
+    mode = NONE;
+    resetSession();
+    if (message != null) fail(message);
+    notifySession();
+  }
+  function chooseTeam(team) {
+    if (mode !== IN) return;
+    if (team !== HUNTER && team !== RUNNER && team !== '') return;
+    if (phase() !== 'lobby') { fail('Drużynę można zmienić tylko w poczekalni.'); return; }
+    me.team = team; me.orig = team; publishSelf();
+  }
+  function hostSettings(s) {
+    if (mode !== IN || !isHost() || !s || game.phase !== 'lobby') return;
+    game.s = settingsFrom(s, game.s);
+    lastSettings = game.s; save('settings', JSON.stringify(game.s));
+    publishGame();
+  }
+  function hostStart() {
+    if (mode !== IN || !isHost() || game.phase === 'running') return;
+    var h = 0, r = 0;
+    everyone().forEach(function (p) { if (p.team === HUNTER) h++; if (p.team === RUNNER) r++; });
+    if (h < 1 || r < 1) { fail('Potrzebny co najmniej jeden łowca i jeden uciekinier.'); return; }
+    if (game.s.zoneOn && game.s.zLat === 0 && game.s.zLon === 0) { fail('Ustaw środek strefy na mapie albo wyłącz strefę.'); return; }
+    game.round++; game.phase = 'running'; game.startAt = hostNow() + COUNTDOWN_MS;
+    game.endedAt = 0; game.winner = ''; game.reason = '';
+    publishGame(); onRoundChanged();
+  }
+  function hostEnd() {
+    if (mode !== IN || !isHost() || game.phase !== 'running') return;
+    var o = outcome();
+    game.phase = 'ended'; game.endedAt = hostNow();
+    game.winner = o ? o.winner : ''; game.reason = o ? o.reason : 'aborted';
+    publishGame();
+  }
+  function hostLobby() {
+    if (mode !== IN || !isHost()) return;
+    if (game.phase === 'running' && outcome() == null) return;
+    game.phase = 'lobby'; publishGame(); onLobby();
+  }
+  function tagged() {
+    if (mode !== IN || phase() !== 'running') return;
+    if (me.orig !== RUNNER || !me.alive) return;
+    if (hostNow() < game.startAt) return;
+    me.alive = false; me.taggedAt = hostNow();
+    if (game.s.convert) me.team = HUNTER;
+    publishSelf();
+    sendRaw('pg/' + myId, null, true);
+    say('tag', 'Zostałeś złapany. ' + leftText(aliveRunners()));
+  }
+  function sendChat(text) {
+    if (mode !== IN || text == null) return;
+    text = text.trim();
+    if (!text) return;
+    if (text.length > 200) text = text.substring(0, 200);
+    var ph = phase();
+    var scope = ph === 'lobby' || ph === 'ended' || !me.team ? '*' : me.team;
+    var m = { from: myId, name: myName, scope: scope, text: text, t: hostNow() };
+    addChat(m); send('c', m, false);
+  }
+  function hostCmd(id, body) {
+    if (mode !== IN || !isHost() || !id) return;
+    if (id === myId) { applyHostCmd(body); return; }
+    body.h = myId;
+    send('x/' + id, body, false);
+    if (body.kick) { delete players[id]; sendRaw('p/' + id, null, true); sendRaw('pg/' + id, null, true); }
+  }
+
+  // ------------------------------------------------------------------ session plumbing
+  function resetSession() {
+    game = null; players = {}; locs = {}; pingRecs = {}; pingSnap = {}; outsideSince = {}; exposedSeen = {};
+    chat = []; feed = []; pendingSelf = null; collision = false; offSamples = []; clockOffset = 0;
+    me = newPlayer(myId, myName);
+    announcedSub = ''; lastPingIdx = 0; lastShrinkIdx = 0; endAnnouncedRound = -1; caughtTicks = 0;
+    meOutside = false; meExposed = false;
+    lastHeartbeat = lastBeacon = lastGamePub = lastLocPub = 0;
+    code = ''; base = ''; error = ''; lastDown = ''; cr = null;
+  }
+  function openLink(newCodeValue) {
+    if (link) link.close();
+    link = null;
+    code = newCodeValue; cr = null; base = '';
+    collision = false; game = null; pendingSelf = null; players = {};
+    attemptAt = now(); syncUntil = 0;
+    var forCode = code, idx = epIdx;
+    makeCrypto(code).then(function (c) {
+      if (code !== forCode || mode === NONE || mode === IN) return;      // superseded meanwhile
+      cr = c; base = 'gnt1/' + c.topicId + '/';
+      link = new Link(ENDPOINTS[idx], 'gnt' + myId + randomId(6), base + '#', listener);
+      link.cr = c; link.base = base; link.outq = Promise.resolve();
+      link.start();
+    }, function (e) { fail('Ta przeglądarka nie obsługuje szyfrowania (wymagane HTTPS). ' + (e && e.message || '')); });
+  }
+  var listener = {
+    onUp: function (l) {
+      if (l !== link) return;
+      if (mode === CREATING || mode === JOINING) syncUntil = now() + SYNC_MS;
+      else if (mode === IN) { publishSelf(); if (isHost()) publishGame(); }
+    },
+    onDown: function (l, why) { if (l !== link) return; syncUntil = 0; lastDown = l.url.replace(/^wss?:\/\//, '').replace(/\/mqtt$/, '') + ' – ' + why; },
+    onMessage: function (l, topic, payload, retained) {
+      if (l !== link || mode === NONE || topic.indexOf(l.base) !== 0) return;
+      var sub = topic.substring(l.base.length);
+      // keep arrival order even though decryption is asynchronous
+      l.inq = l.inq.then(function () {
+        if (payload.length === 0) return null;
+        return l.cr.decrypt(payload);
+      }).then(function (plain) {
+        if (l !== link || mode === NONE) return;
+        try { handle(sub, payload.length === 0, plain, retained); } catch (e) { if (window.console) console.error(e); }
+      });
+    }
+  };
+  function handle(sub, empty, plain, retained) {
+    if (empty) {
+      if (sub === 'g') { if (mode === IN && !isHost()) leave('Gospodarz zakończył grę.'); }
+      else if (sub.indexOf('p/') === 0) { var id = sub.substring(2); if (id !== myId) { delete players[id]; delete locs[id]; delete pingRecs[id]; } }
+      else if (sub.indexOf('pg/') === 0) delete pingRecs[sub.substring(3)];
+      return;
+    }
+    if (plain == null) return;
+    var m; try { m = JSON.parse(plain); } catch (e) { return; }
+    if (!m || typeof m !== 'object') return;
+    if (sub === 'g') onGame(m);
+    else if (sub.indexOf('p/') === 0) onPlayer(sub.substring(2), m, retained);
+    else if (sub.indexOf('l/') === 0) onLoc(sub.substring(2), m);
+    else if (sub.indexOf('pg/') === 0) onPingRec(sub.substring(3), m);
+    else if (sub === 'c') onChat(m);
+    else if (sub === 'k') onBeacon(m);
+    else if (sub === 'x/' + myId) { if (game && game.hostId === str(m, 'h', '')) applyHostCmd(m); }
+  }
+  function onGame(m) {
+    var g = gameFrom(m);
+    if (mode === CREATING) { if (g.hostId !== myId) collision = true; return; }
+    if (game && isHost() && mode === IN) return;
+    if (game && g.rev < game.rev && g.hostId === game.hostId) return;
+    var roundChange = !game || g.round !== game.round, oldPhase = game ? game.phase : '';
+    game = g;
+    if (mode === IN) {
+      if (roundChange && g.phase === 'running') onRoundChanged();
+      if (g.phase === 'lobby' && oldPhase !== 'lobby') onLobby();
+    }
+  }
+  function onPlayer(id, m, retained) {
+    if (id === myId) { if (mode !== IN) pendingSelf = m; return; }
+    var old = players[id], p = newPlayer(id, str(m, 'name', '?'));
+    p.team = str(m, 'team', ''); p.orig = str(m, 'orig', p.team); p.alive = bool(m, 'alive', true);
+    p.taggedAt = int(m, 'tag', 0); p.round = int(m, 'round', 0); p.seq = int(m, 'seq', 0);
+    if (old && old.seq > p.seq) return;
+    p.seenLocal = now() - (retained ? Math.max(0, hostNow() - int(m, 't', 0)) : 0);
+    players[id] = p;
+    if (mode === IN && game && phase() === 'running' && p.round === game.round && !p.alive && old && (old.alive || old.round !== p.round)) {
+      delete pingRecs[id];
+      say('tag', p.name + ' złapany! ' + leftText(aliveRunners()));
+    }
+    if (mode === IN && !old && phase() === 'lobby') note(p.name + ' dołącza do gry');
+  }
+  function onLoc(id, m) { if (id !== myId) locs[id] = { lat: num(m, 'lat', 0), lon: num(m, 'lon', 0), acc: num(m, 'acc', 0), t: int(m, 't', 0) }; }
+  function onPingRec(id, m) {
+    pingRecs[id] = { lat: num(m, 'lat', 0), lon: num(m, 'lon', 0), acc: num(m, 'acc', 0), t: int(m, 't', 0), k: int(m, 'k', 0), round: int(m, 'round', 0) };
+  }
+  function onChat(m) {
+    if (mode !== IN || str(m, 'from', '') === myId) return;
+    var scope = str(m, 'scope', '*');
+    if (scope !== '*' && scope !== me.team) return;
+    addChat(m);
+    alertUser('chat', str(m, 'name', '?') + ': ' + str(m, 'text', ''));
+  }
+  function addChat(m) { chat.push(m); while (chat.length > 60) chat.shift(); }
+  function onBeacon(m) {
+    if (!game || isHost() || game.hostId !== str(m, 'h', '')) return;
+    offSamples.push(int(m, 't', 0) - now());
+    while (offSamples.length > 8) offSamples.shift();
+    clockOffset = Math.max.apply(null, offSamples);
+  }
+  function applyHostCmd(m) {
+    if (mode !== IN) return;
+    if (bool(m, 'kick', false)) { leave('Gospodarz usunął Cię z gry.'); return; }
+    if (bool(m, 'revive', false) && phase() === 'running' && !me.alive) {
+      me.alive = true; me.taggedAt = 0; me.team = me.orig; publishSelf();
+      say('info', 'Gospodarz przywrócił Cię do gry.');
+      return;
+    }
+    var team = str(m, 'team', null);
+    if (team != null && phase() === 'lobby' && (team === HUNTER || team === RUNNER || team === '')) { me.team = team; me.orig = team; publishSelf(); }
+  }
+  function onRoundChanged() {
+    me.round = game.round; me.orig = me.team; me.alive = true; me.taggedAt = 0;
+    locs = {}; pingSnap = {}; outsideSince = {}; exposedSeen = {};
+    announcedSub = ''; lastPingIdx = 0; lastShrinkIdx = 0; caughtTicks = 0; meOutside = false; meExposed = false;
+    publishSelf();
+  }
+  function onLobby() {
+    if (me.orig && me.team !== me.orig) me.team = me.orig;
+    me.alive = true; me.taggedAt = 0; announcedSub = '';
+    publishSelf();
+  }
+
+  // ------------------------------------------------------------------ the clock
+  function tick() {
+    var t = now();
+    if (mode === NONE) return;
+    if (mode === CREATING) { tickCreating(t); notifySession(); return; }
+    if (mode === JOINING) { tickJoining(t); notifySession(); return; }
+    var hn = hostNow();
+    if (link && link.isUp()) {
+      if (t - lastHeartbeat >= 10000) publishSelf();
+      if (isHost()) {
+        if (t - lastBeacon >= 4000) { lastBeacon = t; send('k', { h: myId, t: hn }, false); }
+        if (t - lastGamePub >= 20000) publishGame();
+      }
+    }
+    if (game.phase === 'running') tickRound(t, hn);
+    notifySession();
+  }
+  function tickCreating(t) {
+    var up = link && link.isUp();
+    if (up && syncUntil > 0 && t >= syncUntil) {
+      if (collision) { openLink(newCode(epIdx, ENDPOINTS.length)); return; }
+      game = newGame(); game.hostId = myId; game.hostName = myName;
+      if (lastSettings) game.s = settingsFrom(lastSettings, null);
+      if (myFix && game.s.zLat === 0 && game.s.zLon === 0) { game.s.zLat = myFix.lat; game.s.zLon = myFix.lon; }
+      enter(); publishGame();
+    } else if (!up && t - attemptAt > 9000) {
+      cycleFails++;
+      if (cycleFails >= CREATE_ORDER.length) fail('Brak połączenia z serwerem gry. Sprawdź internet – próbuję dalej…');
+      createTry = (createTry + 1) % CREATE_ORDER.length; epIdx = CREATE_ORDER[createTry];
+      openLink(newCode(epIdx, ENDPOINTS.length));
+    }
+  }
+  function tickJoining(t) {
+    var up = link && link.isUp();
+    if (up && syncUntil > 0 && t >= syncUntil) {
+      if (!game) { leave('Nie znaleziono gry o kodzie ' + code + '.'); return; }
+      enter();
+    } else if (!up && t - attemptAt > 12000 && !error) fail('Brak połączenia z serwerem gry. Sprawdź internet – próbuję dalej…');
+  }
+  function enter() {
+    mode = IN; error = '';
+    me = newPlayer(myId, myName);
+    if (pendingSelf) {
+      me.seq = int(pendingSelf, 'seq', 0);
+      me.team = str(pendingSelf, 'team', ''); me.orig = str(pendingSelf, 'orig', me.team);
+      me.round = int(pendingSelf, 'round', 0);
+      if (me.round === game.round) { me.alive = bool(pendingSelf, 'alive', true); me.taggedAt = int(pendingSelf, 'tag', 0); }
+      else if (game.phase === 'running') { me.team = ''; me.orig = ''; }
+    }
+    me.round = game.round;
+    save('lastCode', code);
+    var hn = hostNow();
+    if (game.phase === 'running') { announcedSub = game.round + ':' + subPhase(hn); lastPingIdx = pingIndex(hn); lastShrinkIdx = shrinkIndex(hn); }
+    publishSelf();
+  }
+  function tickRound(t, hn) {
+    var o = outcome();
+    if (o) {
+      var caught = o.reason === 'caught' || o.reason === 'left';
+      caughtTicks = caught ? caughtTicks + 1 : 3;
+      if (isHost() && caughtTicks >= 3) { game.phase = 'ended'; game.endedAt = o.at; game.winner = o.winner; game.reason = o.reason; publishGame(); }
+      if (endAnnouncedRound !== game.round && caughtTicks >= 2) { endAnnouncedRound = game.round; say('end', 'Koniec rundy! ' + winnerText(o.winner)); }
+      return;
+    }
+    caughtTicks = 0;
+    var sub = subPhase(hn), key = game.round + ':' + sub;
+    if (key !== announcedSub) {
+      announcedSub = key;
+      if (sub === 'countdown') say('start', 'Runda startuje! ' + roleText());
+      else if (sub === 'headstart') say('start', me.team === RUNNER ? 'Uciekaj! Masz ' + dur(game.s.headSec) + ' na ukrycie się.' : 'Uciekinierzy mają ' + dur(game.s.headSec) + ' forów.');
+      else if (sub === 'hunt') say('hunt', me.team === HUNTER ? 'Koniec forów – ruszaj na łowy!' : 'Koniec forów – łowcy ruszyli!');
+    }
+    var participant = me.team === HUNTER || (me.team === RUNNER && me.alive);
+    if (participant && myFix && t - myFixLocal < 180000 && t - lastLocPub >= 4000 && link && link.isUp()) {
+      lastLocPub = t;
+      send('l/' + myId, { lat: myFix.lat, lon: myFix.lon, acc: myFix.acc, t: myFix.t }, false);
+    }
+    if (sub !== 'hunt') return;
+
+    var k = pingIndex(hn);
+    if (k > lastPingIdx) {
+      lastPingIdx = k;
+      if (me.team === RUNNER && me.alive) {
+        if (myFix) send('pg/' + myId, { lat: myFix.lat, lon: myFix.lon, acc: myFix.acc, t: hn, k: k, round: game.round }, true);
+        say('ping', 'Ping! Łowcy widzą Twoją pozycję.');
+      } else if (me.team === HUNTER) {
+        everyone().forEach(function (p) {
+          var f = locs[p.id];
+          if (isAliveRunner(p) && f) pingSnap[p.id] = { lat: f.lat, lon: f.lon, acc: f.acc, t: hn, k: k, round: game.round };
+        });
+        say('ping', 'Nowy ping – pozycje uciekinierów są na mapie.');
+      }
+    }
+    if (game.s.zoneOn) {
+      var si = shrinkIndex(hn);
+      if (si > lastShrinkIdx) { lastShrinkIdx = si; say('zone', 'Strefa się zmniejszyła – promień ' + Math.round(zoneRadius(hn)) + ' m.'); }
+      var radius = zoneRadius(hn), grace = game.s.graceSec * 1000;
+      everyone().forEach(function (p) {
+        var isMe = p === me;
+        if (!isAliveRunner(p)) { delete outsideSince[p.id]; delete exposedSeen[p.id]; return; }
+        var f = isMe ? myFix : locs[p.id];
+        if (!f || hn - f.t > 60000) return;
+        var out = distance(f.lat, f.lon, game.s.zLat, game.s.zLon) > radius + Math.min(f.acc, 20);
+        if (!out) {
+          delete outsideSince[p.id]; delete exposedSeen[p.id];
+          if (isMe && meOutside) { meOutside = false; meExposed = false; say('zone', 'Znowu jesteś w strefie.'); }
+          return;
+        }
+        if (!(p.id in outsideSince)) outsideSince[p.id] = hn;
+        var exposed = hn - outsideSince[p.id] >= grace;
+        if (isMe) {
+          if (!meOutside) { meOutside = true; say('zone', 'Jesteś poza strefą! Masz ' + dur(game.s.graceSec) + ' na powrót.'); }
+          if (exposed && !meExposed) { meExposed = true; say('zone', 'Łowcy widzą Cię na żywo – wracaj do strefy!'); }
+        } else if (exposed && !exposedSeen[p.id]) {
+          exposedSeen[p.id] = true;
+          if (me.team === HUNTER) say('zone', p.name + ' jest poza strefą – widać go na żywo!');
+        }
+      });
+    }
+  }
+
+  // ------------------------------------------------------------------ derived values
+  function hostNow() { return now() + (isHost() ? 0 : clockOffset); }
+  function isHost() { return !!game && game.hostId === myId; }
+  function phase() {
+    if (!game) return '';
+    if (game.phase === 'running' && outcome() != null && caughtTicks >= 2) return 'ended';
+    return game.phase;
+  }
+  function subPhase(hn) { return hn < game.startAt ? 'countdown' : hn < huntAt(game) ? 'headstart' : 'hunt'; }
+  function pingIndex(hn) { return game.s.pingSec <= 0 || hn < huntAt(game) ? 0 : Math.floor((hn - huntAt(game)) / (game.s.pingSec * 1000)); }
+  function shrinkSteps() { return Math.max(1, Math.floor(game.s.roundSec / Math.max(1, game.s.shrinkSec))); }
+  function shrinkIndex(hn) {
+    if (!game.s.zoneOn || !game.s.shrinkOn || hn < huntAt(game)) return 0;
+    return Math.min(Math.floor((hn - huntAt(game)) / (game.s.shrinkSec * 1000)), shrinkSteps());
+  }
+  function zoneRadius(hn) {
+    if (!game.s.shrinkOn) return game.s.zRadius;
+    return game.s.zRadius - (game.s.zRadius - game.s.zFinal) * shrinkIndex(hn) / shrinkSteps();
+  }
+  function everyone() { var l = []; for (var id in players) l.push(players[id]); if (mode === IN) l.push(me); return l; }
+  function origOf(p) { return game && p.round === game.round ? p.orig : p.team; }
+  function aliveOf(p) { return !game || p.round !== game.round || p.alive; }
+  function isAliveRunner(p) { return origOf(p) === RUNNER && aliveOf(p); }
+  function aliveRunners() { return everyone().filter(isAliveRunner).length; }
+  function outcome() {
+    if (!game || game.phase !== 'running' || mode !== IN) return null;
+    var hn = hostNow(), total = 0, alive = 0, lastTag = 0;
+    everyone().forEach(function (p) {
+      if (origOf(p) !== RUNNER) return;
+      total++;
+      if (aliveOf(p)) alive++; else lastTag = Math.max(lastTag, p.taggedAt);
+    });
+    if (hn >= game.startAt && alive === 0) return { winner: HUNTER, reason: total === 0 ? 'left' : 'caught', at: total === 0 ? hn : lastTag };
+    if (hn >= endAt(game)) return { winner: RUNNER, reason: 'time', at: endAt(game) };
+    return null;
+  }
+
+  // ------------------------------------------------------------------ publishing
+  function send(sub, obj, retain) {
+    var l = link;
+    if (!l || !l.cr) return;
+    var text = JSON.stringify(obj);
+    l.outq = l.outq.then(function () { return l.cr.encrypt(text); }).then(function (bytes) {
+      if (!l.dead) l.publish(l.base + sub, bytes, retain);
+    }, function () { });
+  }
+  function sendRaw(sub, payload, retain) {
+    var l = link;
+    if (!l) return;
+    l.outq = l.outq.then(function () { if (!l.dead) l.publish(l.base + sub, payload, retain); });
+  }
+  function publishSelf() {
+    lastHeartbeat = now();
+    me.seq = Math.max(me.seq + 1, now());
+    send('p/' + myId, { name: me.name, team: me.team, orig: me.orig, alive: me.alive, tag: me.taggedAt, round: me.round, seq: me.seq, t: hostNow() }, true);
+  }
+  function publishGame() {
+    lastGamePub = now();
+    game.rev++;
+    send('g', { hostId: game.hostId, hostName: game.hostName, phase: game.phase, round: game.round, rev: game.rev, startAt: game.startAt,
+      endedAt: game.endedAt, winner: game.winner, reason: game.reason, s: game.s, t: hostNow() }, true);
+  }
+  function fail(msg) { error = msg; errorAt = now(); }
+  function note(text) { feed.push({ t: hostNow(), text: text }); while (feed.length > 30) feed.shift(); }
+  function say(kind, text) { note(text); alertUser(kind, text); }
+  function notifySession() {
+    var inGame = mode !== NONE, running = mode === IN && !!game && phase() === 'running';
+    if (inGame !== lastInGame || running !== lastRunning) { lastInGame = inGame; lastRunning = running; sessionChanged(inGame, running); }
+  }
+
+  // ------------------------------------------------------------------ texts
+  function roleText() { return me.team === HUNTER ? 'Jesteś łowcą.' : me.team === RUNNER ? 'Jesteś uciekinierem.' : 'Oglądasz tę rundę.'; }
+  function leftText(left) { return left <= 0 ? 'Wszyscy uciekinierzy złapani.' : left === 1 ? 'Został 1 uciekinier.' : 'Zostało ' + left + ' uciekinierów.'; }
+  function winnerText(w) { return w === HUNTER ? 'Wygrywają łowcy – wszyscy złapani.' : w === RUNNER ? 'Wygrywają uciekinierzy – czas minął.' : 'Runda przerwana.'; }
+  function dur(sec) { return sec < 60 ? sec + ' s' : sec % 60 === 0 ? (sec / 60) + ' min' : Math.floor(sec / 60) + ' min ' + (sec % 60) + ' s'; }
+
+  // ------------------------------------------------------------------ view for the UI
+  function view() {
+    var v = {}, t = now();
+    v.name = myName;
+    v.lastCode = load('lastCode') || '';
+    if (error && t - errorAt > 12000) error = '';
+    v.error = error;
+    if (mode === NONE) { v.screen = 'home'; return v; }
+    v.code = code;
+    v.conn = link && link.isUp() ? 'online' : 'offline';
+    if (mode !== IN) { v.screen = 'connecting'; v.creating = mode === CREATING; v.detail = lastDown; return v; }
+    var hn = hostNow(), ph = phase();
+    v.screen = ph === 'lobby' ? 'lobby' : ph === 'running' ? 'game' : 'end';
+    v.now = hn;
+    var g = { phase: ph, round: game.round, hostName: game.hostName, s: game.s };
+    var o = game.phase === 'running' ? outcome() : null;
+    if (game.phase === 'running') {
+      g.sub = subPhase(hn); g.toStart = game.startAt - hn; g.toHunt = huntAt(game) - hn; g.toEnd = endAt(game) - hn;
+      if (game.s.pingSec > 0) { var next = huntAt(game) + (pingIndex(hn) + 1) * game.s.pingSec * 1000; g.toPing = next < endAt(game) ? next - hn : -1; }
+      else g.toPing = -1;
+      g.toShrink = game.s.zoneOn && game.s.shrinkOn && shrinkIndex(hn) < shrinkSteps()
+        ? huntAt(game) + (shrinkIndex(hn) + 1) * game.s.shrinkSec * 1000 - hn : -1;
+    }
+    if (ph === 'ended') { g.winner = o ? o.winner : game.winner; g.reason = o ? o.reason : game.reason; }
+    v.game = g;
+    var running = ph === 'running';
+    var refEnd = ph === 'ended' ? (o ? o.at : game.endedAt) : hn;
+    var meV = { id: myId, team: me.team, orig: origOf(me), alive: aliveOf(me), host: isHost() };
+    if (myFix) { meV.lat = myFix.lat; meV.lon = myFix.lon; meV.acc = myFix.acc; meV.fixAge = Math.floor((t - myFixLocal) / 1000); }
+    v.me = meV;
+    if (game.s.zoneOn) {
+      var z = { lat: game.s.zLat, lon: game.s.zLon, radius: running ? zoneRadius(hn) : game.s.zRadius };
+      if (running) {
+        z.outside = meOutside; z.exposed = meExposed;
+        z.exposeIn = myId in outsideSince ? Math.max(0, outsideSince[myId] + game.s.graceSec * 1000 - hn) : -1;
+        if (myFix) z.dist = distance(myFix.lat, myFix.lon, game.s.zLat, game.s.zLon);
+      }
+      v.zone = z;
+    }
+    var all = everyone().sort(function (a, b) { return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : a.name.toLowerCase() > b.name.toLowerCase() ? 1 : 0; });
+    var hunters = 0, total = 0, alive = 0;
+    v.players = all.map(function (p) {
+      var orig = origOf(p), al = aliveOf(p);
+      if (orig === HUNTER) hunters++;
+      if (orig === RUNNER) { total++; if (al) alive++; }
+      var r = { id: p.id, name: p.name, team: p.team, orig: orig, alive: al, me: p === me, host: p.id === game.hostId,
+        online: p === me ? !!(link && link.isUp()) : t - p.seenLocal < 35000 };
+      if (orig === RUNNER && ph !== 'lobby' && hn >= huntAt(game)) {
+        var until = al ? Math.min(refEnd, endAt(game)) : p.taggedAt;
+        r.survived = Math.floor(Math.max(0, until - huntAt(game)) / 1000);
+      }
+      return r;
+    });
+    v.counts = { hunters: hunters, runners: total, alive: alive };
+    var marks = [];
+    if (ph !== 'lobby') {
+      var reveal = ph === 'ended', hunting = running && hn >= huntAt(game);
+      for (var id in players) {
+        var p = players[id], orig = origOf(p), al = aliveOf(p), live = locs[id];
+        if (reveal) { if (live && orig) marks.push(mark(p, 'reveal', live, hn)); continue; }
+        var mate = !!me.team && p.team === me.team && (p.team === HUNTER || al);
+        if (mate) { if (live) marks.push(mark(p, 'mate', live, hn)); continue; }
+        if (me.team === HUNTER && orig === RUNNER && al && hunting) {
+          if (game.s.zoneOn && id in outsideSince && hn - outsideSince[id] >= game.s.graceSec * 1000 && live) { marks.push(mark(p, 'live', live, hn)); continue; }
+          var rec = pingRecs[id];
+          if (rec && rec.round !== game.round) rec = null;
+          var snap = pingSnap[id];
+          if (snap && (!rec || snap.k > rec.k) && hn - snap.t < 3600000) rec = snap;
+          if (rec) marks.push(mark(p, 'ping', rec, hn));
+        }
+      }
+    }
+    v.marks = marks;
+    v.chat = chat.map(function (c) { return { name: str(c, 'name', '?'), text: str(c, 'text', ''), t: int(c, 't', 0), me: str(c, 'from', '') === myId, scope: str(c, 'scope', '*') }; });
+    v.feed = feed.slice();
+    return v;
+  }
+  function mark(p, kind, f, hn) {
+    return { id: p.id, name: p.name, kind: kind, team: origOf(p), lat: f.lat, lon: f.lon, age: Math.max(0, Math.floor((hn - f.t) / 1000)) };
+  }
+
+  setInterval(tick, 1000);
+
+  // ------------------------------------------------------------------ the bridge the UI talks to
+  window.Native = {
+    web: true,
+    getState: function () { return JSON.stringify(view()); },
+    cmd: function (json) { command(json); },
+    permState: function () {
+      return JSON.stringify({ location: geo.state === 'granted', notif: true, gps: true, denied: geo.state === 'denied',
+        secure: !!(window.isSecureContext && navigator.geolocation && window.crypto && crypto.subtle) });
+    },
+    requestPerms: function () {
+      if (!navigator.geolocation) return;
+      navigator.geolocation.getCurrentPosition(onPos, onPosErr, { enableHighAccuracy: true, timeout: 20000 });
+    },
+    share: function (text) {
+      if (navigator.share) navigator.share({ text: text }).catch(function () { });
+      else if (navigator.clipboard) navigator.clipboard.writeText(text).catch(function () { });
+    },
+    keepScreenOn: function (on) { wake.want = !!on; applyWake(); }
+  };
+  // test hook: lets automated tests feed positions without a GPS
+  window.__gonitwaLoc = function (lat, lon, acc) { onPos({ coords: { latitude: lat, longitude: lon, accuracy: acc || 5 } }); };
+})();
+
+</script>
+<script>
+/* Minimal slippy map on a canvas: OpenStreetMap tiles, drag, pinch, tap. No dependencies. */
+(function () {
+  'use strict';
+  var TILE = 256;
+  var cache = {};          // "z/x/y" -> {img, ok}
+  var cacheKeys = [];
+
+  function lon2x(lon, z) { return (lon + 180) / 360 * Math.pow(2, z) * TILE; }
+  function lat2y(lat, z) {
+    var r = lat * Math.PI / 180;
+    return (1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2 * Math.pow(2, z) * TILE;
+  }
+  function x2lon(x, z) { return x / (Math.pow(2, z) * TILE) * 360 - 180; }
+  function y2lat(y, z) {
+    var n = Math.PI - 2 * Math.PI * y / (Math.pow(2, z) * TILE);
+    return 180 / Math.PI * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
+  }
+
+  function TileMap(canvas, opts) {
+    this.c = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.lat = 52.2297; this.lon = 21.0122; this.zoom = 15;
+    this.opts = opts || {};
+    this.draw = null;        // function(ctx, map) for overlays
+    this.onTap = null;       // function(lat, lon)
+    this.onUserMove = null;  // called when the user pans/zooms by hand
+    this.dirty = true;
+    this._ptrs = {};
+    this._bind();
+    var self = this;
+    (function loop() {
+      if (self.dirty && self.c.offsetParent !== null) { self.dirty = false; self._render(); }
+      self._raf = requestAnimationFrame(loop);
+    })();
+  }
+
+  TileMap.prototype.setView = function (lat, lon, zoom) {
+    if (isFinite(lat) && isFinite(lon)) { this.lat = Math.max(-85, Math.min(85, lat)); this.lon = lon; }
+    if (zoom != null) this.zoom = Math.max(3, Math.min(19, zoom));
+    this.dirty = true;
+  };
+
+  /** Fits a circle (centre + radius in metres) into the view. */
+  TileMap.prototype.fitCircle = function (lat, lon, radiusM) {
+    var size = Math.min(this.c.clientWidth, this.c.clientHeight) || 300;
+    var mpp = radiusM * 2.4 / size;                       // wanted metres per CSS pixel
+    var z = Math.log(156543.03392 * Math.cos(lat * Math.PI / 180) / mpp) / Math.LN2;
+    this.setView(lat, lon, Math.min(18, z));
+  };
+
+  TileMap.prototype.invalidate = function () { this.dirty = true; };
+
+  /** Geographic position -> CSS pixel position on the canvas. */
+  TileMap.prototype.project = function (lat, lon) {
+    var z = this.zoom;
+    return {
+      x: lon2x(lon, z) - lon2x(this.lon, z) + this.c.clientWidth / 2,
+      y: lat2y(lat, z) - lat2y(this.lat, z) + this.c.clientHeight / 2
+    };
+  };
+
+  TileMap.prototype.unproject = function (px, py) {
+    var z = this.zoom;
+    return {
+      lat: y2lat(lat2y(this.lat, z) + py - this.c.clientHeight / 2, z),
+      lon: x2lon(lon2x(this.lon, z) + px - this.c.clientWidth / 2, z)
+    };
+  };
+
+  /** Metres -> CSS pixels at the given latitude. */
+  TileMap.prototype.metres = function (m, lat) {
+    return m / (156543.03392 * Math.cos(lat * Math.PI / 180) / Math.pow(2, this.zoom));
+  };
+
+  TileMap.prototype._render = function () {
+    var c = this.c, ctx = this.ctx;
+    var dpr = window.devicePixelRatio || 1;
+    var w = c.clientWidth, h = c.clientHeight;
+    if (!w || !h) return;
+    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) {
+      c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
+    }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.fillStyle = '#16201c';
+    ctx.fillRect(0, 0, w, h);
+
+    var zi = Math.max(3, Math.min(19, Math.round(this.zoom)));
+    var scale = Math.pow(2, this.zoom - zi);
+    var cx = lon2x(this.lon, zi), cy = lat2y(this.lat, zi);
+    var n = Math.pow(2, zi);
+    var x0 = Math.floor((cx - w / 2 / scale) / TILE), x1 = Math.floor((cx + w / 2 / scale) / TILE);
+    var y0 = Math.floor((cy - h / 2 / scale) / TILE), y1 = Math.floor((cy + h / 2 / scale) / TILE);
+    var self = this;
+    for (var ty = y0; ty <= y1; ty++) {
+      for (var tx = x0; tx <= x1; tx++) {
+        var px = (tx * TILE - cx) * scale + w / 2, py = (ty * TILE - cy) * scale + h / 2;
+        var size = TILE * scale;
+        if (ty < 0 || ty >= n) continue;
+        var t = this._tile(zi, ((tx % n) + n) % n, ty);
+        if (t.ok) {
+          ctx.drawImage(t.img, px, py, size + 0.5, size + 0.5);
+        } else {
+          ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+          ctx.strokeRect(px, py, size, size);
+        }
+      }
+    }
+    if (this.opts.dim) { ctx.fillStyle = 'rgba(8,14,12,' + this.opts.dim + ')'; ctx.fillRect(0, 0, w, h); }
+    if (this.draw) this.draw(ctx, this);
+    ctx.font = '10px sans-serif';
+    ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    var label = '© OpenStreetMap';
+    ctx.fillRect(w - ctx.measureText(label).width - 8, h - 15, ctx.measureText(label).width + 8, 15);
+    ctx.fillStyle = '#fff';
+    ctx.fillText(label, w - 4, h - 2);
+    void self;
+  };
+
+  TileMap.prototype._tile = function (z, x, y) {
+    var key = z + '/' + x + '/' + y;
+    var t = cache[key];
+    if (t) return t;
+    t = cache[key] = { img: new Image(), ok: false };
+    cacheKeys.push(key);
+    if (cacheKeys.length > 400) { delete cache[cacheKeys.shift()]; }
+    var self = this;
+    t.img.onload = function () { t.ok = true; self.dirty = true; };
+    t.img.onerror = function () {
+      // retry later: forget the tile so the next render asks again
+      setTimeout(function () { if (cache[key] === t) { delete cache[key]; self.dirty = true; } }, 8000);
+    };
+    t.img.src = 'https://tile.openstreetmap.org/' + key + '.png';
+    return t;
+  };
+
+  TileMap.prototype._bind = function () {
+    var self = this, c = this.c;
+    var start = null, moved = false, pinch = null;
+    c.style.touchAction = 'none';
+    function pts() { var a = []; for (var k in self._ptrs) a.push(self._ptrs[k]); return a; }
+    c.addEventListener('pointerdown', function (e) {
+      c.setPointerCapture && c.setPointerCapture(e.pointerId);
+      self._ptrs[e.pointerId] = { x: e.offsetX, y: e.offsetY };
+      var p = pts();
+      if (p.length === 1) { start = { x: e.offsetX, y: e.offsetY, t: Date.now() }; moved = false; }
+      if (p.length === 2) {
+        pinch = { d: Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y), zoom: self.zoom };
+        moved = true;
+      }
+    });
+    c.addEventListener('pointermove', function (e) {
+      var prev = self._ptrs[e.pointerId];
+      if (!prev) return;
+      var p = pts();
+      if (p.length === 1) {
+        var dx = e.offsetX - prev.x, dy = e.offsetY - prev.y;
+        if (start && Math.hypot(e.offsetX - start.x, e.offsetY - start.y) > 8) moved = true;
+        if (moved) {
+          var z = self.zoom;
+          self.lon = x2lon(lon2x(self.lon, z) - dx, z);
+          self.lat = Math.max(-85, Math.min(85, y2lat(lat2y(self.lat, z) - dy, z)));
+          self.dirty = true;
+          if (self.onUserMove) self.onUserMove();
+        }
+      }
+      prev.x = e.offsetX; prev.y = e.offsetY;
+      if (p.length === 2 && pinch) {
+        var d = Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y);
+        if (d > 0 && pinch.d > 0) {
+          self.zoom = Math.max(3, Math.min(19, pinch.zoom + Math.log(d / pinch.d) / Math.LN2));
+          self.dirty = true;
+          if (self.onUserMove) self.onUserMove();
+        }
+      }
+    });
+    function up(e) {
+      if (!self._ptrs[e.pointerId]) return;
+      delete self._ptrs[e.pointerId];
+      if (pts().length < 2) pinch = null;
+      if (pts().length === 0 && start && !moved && Date.now() - start.t < 600 && self.onTap) {
+        var g = self.unproject(start.x, start.y);
+        self.onTap(g.lat, g.lon);
+      }
+      if (pts().length === 0) start = null;
+    }
+    c.addEventListener('pointerup', up);
+    c.addEventListener('pointercancel', function (e) { delete self._ptrs[e.pointerId]; pinch = null; start = null; });
+    c.addEventListener('wheel', function (e) {
+      e.preventDefault();
+      self.zoom = Math.max(3, Math.min(19, self.zoom - e.deltaY / 400));
+      self.dirty = true;
+      if (self.onUserMove) self.onUserMove();
+    }, { passive: false });
+    window.addEventListener('resize', function () { self.dirty = true; });
+  };
+
+  TileMap.prototype.zoomBy = function (d) {
+    this.zoom = Math.max(3, Math.min(19, this.zoom + d));
+    this.dirty = true;
+  };
+
+  window.TileMap = TileMap;
+})();
+
+</script>
+<script>
+/* Gonitwa UI. Renders the view JSON produced by the game engine and sends commands back. */
+(function () {
+  'use strict';
+  var N = window.Native;
+  var sid = (new URLSearchParams(location.search)).get('s') || '1';
+  var bridge = N ? {
+    state: function () { return Promise.resolve(JSON.parse(N.getState())); },
+    cmd: function (o) { N.cmd(JSON.stringify(o)); return Promise.resolve(); },
+    perms: function () { return JSON.parse(N.permState()); },
+    requestPerms: function () { N.requestPerms(); },
+    share: function (t) { N.share(t); },
+    keepScreen: function (on) { N.keepScreenOn(!!on); }
+  } : {
+    state: function () { return fetch('/api/' + sid + '/state').then(function (r) { return r.json(); }); },
+    cmd: function (o) { return fetch('/api/' + sid + '/cmd', { method: 'POST', body: JSON.stringify(o) }); },
+    perms: function () { return { location: true, notif: true, gps: true }; },
+    requestPerms: function () {},
+    share: function (t) { window.__shared = t; },
+    keepScreen: function () {}
+  };
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  var htmlCache = {};
+  function setHTML(id, html) { if (htmlCache[id] !== html) { htmlCache[id] = html; $(id).innerHTML = html; return true; } return false; }
+  function setText(id, t) { var e = $(id); if (e.textContent !== t) e.textContent = t; }
+  function hide(id, h) { var e = $(id); if (e.hidden !== !!h) e.hidden = !!h; }
+  function clock(ms) {
+    var s = Math.max(0, Math.ceil(ms / 1000));
+    var m = Math.floor(s / 60), r = s % 60;
+    if (m >= 60) return Math.floor(m / 60) + ':' + String(m % 60).padStart(2, '0') + ':' + String(r).padStart(2, '0');
+    return m + ':' + String(r).padStart(2, '0');
+  }
+  function durText(sec) {
+    if (sec <= 0) return 'wyłączone';
+    if (sec < 60) return sec + ' s';
+    if (sec % 60 === 0) return (sec / 60) + ' min';
+    return Math.floor(sec / 60) + ' min ' + (sec % 60) + ' s';
+  }
+  function ago(sec) {
+    if (sec < 10) return 'teraz';
+    if (sec < 60) return sec + ' s temu';
+    return Math.floor(sec / 60) + ' min temu';
+  }
+  function cmd(o) { return bridge.cmd(o).then(poll1); }
+
+  var V = null;             // latest view
+  var screen = '';
+  var COL = { H: '#ff6b3d', R: '#35e0c2', '': '#8fa39b' };
+
+  // ------------------------------------------------------------------ polling
+  var polling = false;
+  function poll1() {
+    if (polling) return;
+    polling = true;
+    bridge.state().then(function (v) { V = v; render(v); }).catch(function () {}).then(function () { polling = false; });
+  }
+  setInterval(poll1, 400);
+
+  function render(v) {
+    if (v.screen !== screen) {
+      var prev = screen;
+      screen = v.screen;
+      var all = document.querySelectorAll('.screen');
+      for (var i = 0; i < all.length; i++) all[i].classList.toggle('on', all[i].id === 's-' + screen);
+      closeSheets();
+      window.scrollTo(0, 0);
+      bridge.keepScreen(screen === 'game');
+      onEnter(screen, prev, v);
+    }
+    if (screen === 'home') renderHome(v);
+    else if (screen === 'connecting') renderConnecting(v);
+    else if (screen === 'lobby') renderLobby(v);
+    else if (screen === 'game') renderGame(v);
+    else if (screen === 'end') renderEnd(v);
+  }
+
+  function onEnter(s, prev, v) {
+    if (s === 'game') {
+      ensureGameMap();
+      follow = !v.zone;
+      if (v.zone) gameMap.fitCircle(v.zone.lat, v.zone.lon, v.zone.radius);
+      else if (v.me.lat != null) gameMap.setView(v.me.lat, v.me.lon, 16);
+      lastFeedKey = feedKey(v);
+      unread = 0; chatSeen = (v.chat || []).length;
+      $('toast').hidden = true;
+    }
+    if (s === 'end') endFitted = false;
+    if (s === 'lobby') { zoneFitKey = ''; settingsSynced = false; }
+  }
+
+  // ------------------------------------------------------------------ home
+  // Address of the browser version (iPhone), hosted on GitHub Pages.
+  var WEB_URL = 'https://jestewole-ops.github.io/gonitwa/';
+  var linkCode = (function () {   // a shared link like ...?kod=ABC234 pre-fills the join field
+    try { return (new URLSearchParams(location.search).get('kod') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6); } catch (e) { return ''; }
+  })();
+  var nameTimer = null, codePrefilled = false;
+  $('name').addEventListener('input', function () {
+    clearTimeout(nameTimer);
+    var val = $('name').value;
+    nameTimer = setTimeout(function () { nameTimer = null; bridge.cmd({ cmd: 'setName', name: val }); }, 250);
+  });
+  function ensurePerms() {
+    var p = bridge.perms();
+    if (p.location && p.gps) return true;
+    bridge.requestPerms();
+    return false;
+  }
+  function flushName() {
+    clearTimeout(nameTimer);
+    nameTimer = null;
+    return bridge.cmd({ cmd: 'setName', name: $('name').value });
+  }
+  $('create').addEventListener('click', function () {
+    if (!ensurePerms()) return;
+    flushName().then(function () { cmd({ cmd: 'create' }); });
+  });
+  $('join').addEventListener('click', function () {
+    if (!ensurePerms()) return;
+    flushName().then(function () { cmd({ cmd: 'join', code: $('code').value }); });
+  });
+  $('code').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('join').click(); });
+  $('perm-btn').addEventListener('click', function () { bridge.requestPerms(); });
+
+  function renderHome(v) {
+    var nameEl = $('name');
+    if (document.activeElement !== nameEl && nameTimer === null && nameEl.value !== v.name) nameEl.value = v.name;
+    if (!codePrefilled && (linkCode || v.lastCode)) { codePrefilled = true; if (!$('code').value) $('code').value = linkCode || v.lastCode; }
+    var p = bridge.perms();
+    hide('perm-card', p.location && p.gps);
+    setText('perm-text', p.secure === false
+      ? 'Ta strona musi być otwarta przez HTTPS – inaczej przeglądarka nie udostępni lokalizacji.'
+      : p.denied ? 'Dostęp do lokalizacji jest zablokowany dla tej strony. Odblokuj go w ustawieniach przeglądarki i odśwież stronę.'
+      : !p.location ? (N && N.web ? 'Gra pokazuje graczy na mapie, więc wymaga dostępu do lokalizacji.'
+        : 'Gra pokazuje graczy na mapie, więc wymaga dostępu do lokalizacji (dokładnej) i powiadomień.')
+      : 'Lokalizacja w telefonie jest wyłączona. Włącz ją, żeby zagrać.');
+    hide('web-note', !(N && N.web));
+    setText('perm-btn', !p.location ? 'Zezwól' : 'Włącz lokalizację');
+    hide('home-error', !v.error);
+    setText('home-error', v.error || '');
+  }
+
+  // ------------------------------------------------------------------ connecting
+  $('conn-cancel').addEventListener('click', function () { cmd({ cmd: 'leave' }); });
+  function renderConnecting(v) {
+    setText('conn-title', v.creating ? 'Tworzę grę…' : 'Dołączam do gry');
+    setText('conn-sub', (v.creating ? 'Szukam wolnego serwera' : 'Kod ' + v.code) + (v.detail ? '\n' + v.detail : ''));
+    hide('conn-error', !v.error);
+    setText('conn-error', v.error || '');
+  }
+
+  // ------------------------------------------------------------------ lobby
+  var OPT = {
+    round: [1, 2, 5, 10, 15, 20, 30, 45, 60, 90, 120].map(function (m) { return [m * 60, m + ' min']; }),
+    head: [0, 15, 30, 60, 90, 120, 180, 300, 600].map(function (s) { return [s, s === 0 ? 'brak' : durText(s)]; }),
+    ping: [0, 30, 60, 120, 180, 300, 600].map(function (s) { return [s, s === 0 ? 'wyłączony' : 'co ' + durText(s)]; }),
+    grace: [5, 10, 20, 30, 60, 120].map(function (s) { return [s, durText(s)]; }),
+    shrinksec: [30, 60, 120, 180, 300, 600].map(function (s) { return [s, durText(s)]; })
+  };
+  function fillSelect(id, opts) {
+    $(id).innerHTML = opts.map(function (o) { return '<option value="' + o[0] + '">' + o[1] + '</option>'; }).join('');
+  }
+  fillSelect('set-round', OPT.round); fillSelect('set-head', OPT.head); fillSelect('set-ping', OPT.ping);
+  fillSelect('set-grace', OPT.grace); fillSelect('set-shrinksec', OPT.shrinksec);
+  function setSelect(id, val, opts) {
+    var el = $(id), found = false;
+    for (var i = 0; i < el.options.length; i++) if (Number(el.options[i].value) === val) found = true;
+    if (!found) { var o = document.createElement('option'); o.value = val; o.textContent = durText(val); el.appendChild(o); }
+    el.value = String(val);
+    void opts;
+  }
+
+  var lastEdit = 0, settingsSynced = false;
+  var zoneDraft = null;          // host's pending centre {lat, lon}
+  function collectSettings() {
+    var radius = Number($('set-radius').value);
+    var s = {
+      roundSec: Number($('set-round').value), headSec: Number($('set-head').value), pingSec: Number($('set-ping').value),
+      convert: $('set-convert').checked, zoneOn: $('set-zone').checked, zRadius: radius,
+      graceSec: Number($('set-grace').value), shrinkOn: $('set-shrink').checked,
+      shrinkSec: Number($('set-shrinksec').value), zFinal: Math.min(radius, Number($('set-final').value))
+    };
+    if (zoneDraft) { s.zLat = zoneDraft.lat; s.zLon = zoneDraft.lon; }
+    else if (s.zoneOn && V && V.game.s.zLat === 0 && V.game.s.zLon === 0 && V.me.lat != null) { s.zLat = V.me.lat; s.zLon = V.me.lon; }
+    return s;
+  }
+  function pushSettings() {
+    lastEdit = Date.now();
+    updateSettingLabels();
+    cmd({ cmd: 'settings', s: collectSettings() });
+    zoneDraft = null;
+  }
+  function updateSettingLabels() {
+    setText('lbl-radius', $('set-radius').value + ' m');
+    $('set-final').max = $('set-radius').value;
+    setText('lbl-final', Math.min(Number($('set-final').value), Number($('set-radius').value)) + ' m');
+    hide('zone-opts', !$('set-zone').checked);
+    hide('shrink-opts', !$('set-shrink').checked);
+  }
+  ['set-round', 'set-head', 'set-ping', 'set-convert', 'set-zone', 'set-grace', 'set-shrink', 'set-shrinksec'].forEach(function (id) {
+    $(id).addEventListener('change', pushSettings);
+  });
+  ['set-radius', 'set-final'].forEach(function (id) {
+    $(id).addEventListener('input', function () { lastEdit = Date.now(); updateSettingLabels(); if (zoneMap) zoneMap.invalidate(); });
+    $(id).addEventListener('change', pushSettings);
+  });
+
+  var teamBtns = document.querySelectorAll('.team-btn');
+  for (var tb = 0; tb < teamBtns.length; tb++) {
+    teamBtns[tb].addEventListener('click', function (e) {
+      var t = e.currentTarget.getAttribute('data-team');
+      cmd({ cmd: 'team', team: V && V.me.team === t ? '' : t });
+    });
+  }
+  $('share').addEventListener('click', function () {
+    if (!V) return;
+    var t = 'Zagraj ze mną w Gonitwę! Kod gry: ' + V.code;
+    if (WEB_URL.indexOf('GITHUB_LOGIN') < 0) t += '\niPhone lub przeglądarka: ' + WEB_URL + '?kod=' + V.code;
+    bridge.share(t);
+  });
+  $('lobby-leave').addEventListener('click', function (e) { confirmTap(e.currentTarget, 'Na pewno?', function () { cmd({ cmd: 'leave' }); }); });
+  $('start').addEventListener('click', function () { cmd({ cmd: 'start' }); });
+  $('zone-here').addEventListener('click', function () {
+    if (V && V.me.lat != null) { zoneDraft = { lat: V.me.lat, lon: V.me.lon }; zoneFitKey = ''; pushSettings(); }
+  });
+  $('lobby-chat-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var i = $('lobby-chat-input');
+    if (i.value.trim()) cmd({ cmd: 'chat', text: i.value });
+    i.value = '';
+  });
+
+  /** Two-tap confirmation without modal dialogs. */
+  function confirmTap(btn, label, fn) {
+    if (btn._armed) { clearTimeout(btn._armed); btn._armed = null; btn.textContent = btn._label; fn(); return; }
+    btn._label = btn.textContent;
+    btn.textContent = label;
+    btn._armed = setTimeout(function () { btn._armed = null; btn.textContent = btn._label; }, 2500);
+  }
+
+  function chip(p) {
+    return '<span class="chip' + (p.me ? ' me' : '') + (p.online ? '' : ' off') + '" data-id="' + esc(p.id) + '">' +
+      esc(p.name) + (p.host ? ' <i>★</i>' : '') + (p.me ? ' <i>ty</i>' : '') + '</span>';
+  }
+  function chipsFor(v, team) {
+    var l = v.players.filter(function (p) { return p.team === team; });
+    return l.length ? l.map(chip).join('') : '<span class="dim" style="font-size:13px">nikogo</span>';
+  }
+  function chatHTML(list, emptyText) {
+    if (!list.length) return '<p class="empty">' + emptyText + '</p>';
+    return list.map(function (c) { return '<p class="' + (c.me ? 'mine' : '') + '"><b>' + esc(c.name) + '</b> ' + esc(c.text) + '</p>'; }).join('');
+  }
+
+  var zoneMap = null, zoneFitKey = '';
+  function ensureZoneMap() {
+    if (zoneMap) return;
+    zoneMap = new TileMap($('zone-map'));
+    zoneMap.draw = function (ctx, m) {
+      if (!V || !V.game) return;
+      var s = V.game.s, c = zoneDraft || { lat: s.zLat, lon: s.zLon };
+      var host = V.me.host;
+      var radius = host ? Number($('set-radius').value) : s.zRadius;
+      var fin = host ? Math.min(radius, Number($('set-final').value)) : s.zFinal;
+      if (c.lat !== 0 || c.lon !== 0) drawZone(ctx, m, c.lat, c.lon, radius, (host ? $('set-shrink').checked : s.shrinkOn) ? fin : 0);
+      if (V.me.lat != null) drawMe(ctx, m, V.me);
+    };
+    zoneMap.onTap = function (lat, lon) {
+      if (!V || !V.me.host) return;
+      zoneDraft = { lat: lat, lon: lon };
+      pushSettings();
+      zoneDraft = { lat: lat, lon: lon };     // keep showing it until the engine echoes the new centre
+      setTimeout(function () { zoneDraft = null; }, 1500);
+    };
+  }
+  var zoomBtns = document.querySelectorAll('.zoom button[data-z]');
+  for (var zb = 0; zb < zoomBtns.length; zb++) {
+    zoomBtns[zb].addEventListener('click', function (e) {
+      var d = Number(e.currentTarget.getAttribute('data-z'));
+      var inGame = e.currentTarget.parentNode.classList.contains('game-zoom');
+      var m = inGame ? gameMap : zoneMap;
+      if (m) m.zoomBy(d);
+    });
+  }
+
+  function renderLobby(v) {
+    var s = v.game.s, host = v.me.host;
+    setText('lobby-code', v.code);
+    hide('lobby-offline', v.conn === 'online');
+    hide('lobby-error', !v.error);
+    setText('lobby-error', v.error || '');
+    setHTML('team-h', chipsFor(v, 'H'));
+    setHTML('team-r', chipsFor(v, 'R'));
+    setText('cnt-h', String(v.counts.hunters));
+    setText('cnt-r', String(v.counts.runners));
+    var none = v.players.filter(function (p) { return p.team === ''; });
+    hide('noteam-wrap', !none.length);
+    setHTML('team-none', none.map(chip).join(''));
+    for (var i = 0; i < teamBtns.length; i++) {
+      var mine = teamBtns[i].getAttribute('data-team') === v.me.team;
+      teamBtns[i].classList.toggle('mine', mine);
+      var label = mine ? 'Jesteś tutaj' : 'Dołącz';
+      if (teamBtns[i].textContent !== label) teamBtns[i].textContent = label;
+    }
+
+    hide('settings-host', !host);
+    hide('settings-guest', host);
+    if (host) {
+      if (!settingsSynced || (Date.now() - lastEdit > 2500 && !document.activeElement.closest('#settings-host'))) {
+        settingsSynced = true;
+        setSelect('set-round', s.roundSec); setSelect('set-head', s.headSec); setSelect('set-ping', s.pingSec);
+        setSelect('set-grace', s.graceSec); setSelect('set-shrinksec', s.shrinkSec);
+        $('set-convert').checked = s.convert; $('set-zone').checked = s.zoneOn; $('set-shrink').checked = s.shrinkOn;
+        $('set-radius').value = s.zRadius; $('set-final').max = s.zRadius; $('set-final').value = s.zFinal;
+        updateSettingLabels();
+      }
+    } else {
+      var rows = [
+        ['Czas polowania', durText(s.roundSec)],
+        ['Fory dla uciekinierów', s.headSec ? durText(s.headSec) : 'brak'],
+        ['Ping pozycji', s.pingSec ? 'co ' + durText(s.pingSec) : 'wyłączony'],
+        ['Złapani dołączają do łowców', s.convert ? 'tak' : 'nie'],
+        ['Strefa gry', s.zoneOn ? 'promień ' + s.zRadius + ' m' + (s.shrinkOn ? ', kurczy się do ' + s.zFinal + ' m' : '') : 'bez strefy']
+      ];
+      if (s.zoneOn) rows.push(['Czas na powrót do strefy', durText(s.graceSec)]);
+      setHTML('settings-guest', rows.map(function (r) { return '<div class="row"><span>' + r[0] + '</span><b>' + r[1] + '</b></div>'; }).join(''));
+    }
+
+    var zoneOn = host ? $('set-zone').checked : s.zoneOn;
+    hide('zone-map-wrap', !zoneOn);
+    if (zoneOn) {
+      ensureZoneMap();
+      var hasCentre = s.zLat !== 0 || s.zLon !== 0;
+      var key = hasCentre ? [s.zLat.toFixed(5), s.zLon.toFixed(5), s.zRadius].join('|') : (v.me.lat != null ? 'me' : '');
+      if (key !== zoneFitKey && $('zone-map').clientWidth) {
+        zoneFitKey = key;
+        if (hasCentre) zoneMap.fitCircle(s.zLat, s.zLon, s.zRadius);
+        else if (v.me.lat != null) zoneMap.setView(v.me.lat, v.me.lon, 16);
+      }
+      setText('zone-hint', host ? (hasCentre ? 'Dotknij mapy, aby przenieść środek strefy' : 'Dotknij mapy, aby ustawić środek strefy') : 'Strefa gry');
+      hide('zone-here', !(host && v.me.lat != null));
+      zoneMap.invalidate();
+    }
+
+    if (setHTML('lobby-chat', chatHTML(v.chat, 'Jeszcze nikt nic nie napisał.'))) $('lobby-chat').scrollTop = 1e6;
+    hide('start', !host);
+    hide('wait-host', host);
+    setText('wait-host', 'Czekamy, aż ' + v.game.hostName + ' wystartuje rundę.');
+  }
+
+  // host: tap a player chip -> actions
+  document.addEventListener('click', function (e) {
+    var c = e.target.closest ? e.target.closest('.chip[data-id], .trow[data-id]') : null;
+    if (!c || !V || !V.me || !V.me.host) return;
+    var p = (V.players || []).filter(function (x) { return x.id === c.getAttribute('data-id'); })[0];
+    if (!p || p.me) return;
+    openPlayer(p);
+  });
+  function openPlayer(p) {
+    setText('player-name', p.name);
+    var html = '';
+    if (screen === 'lobby') {
+      html += '<button class="btn" data-act="assign" data-team="H">Przenieś do łowców</button>';
+      html += '<button class="btn" data-act="assign" data-team="R">Przenieś do uciekinierów</button>';
+    }
+    if (screen === 'game' && p.orig === 'R' && !p.alive) html += '<button class="btn" data-act="revive">Przywróć do gry (pomyłka)</button>';
+    html += '<button class="btn danger" data-act="kick">Usuń z gry</button>';
+    $('player-actions').innerHTML = html;
+    $('player-actions').onclick = function (e) {
+      var b = e.target.closest('button');
+      if (!b) return;
+      var act = b.getAttribute('data-act');
+      if (act === 'assign') cmd({ cmd: 'assign', id: p.id, team: b.getAttribute('data-team') });
+      if (act === 'revive') cmd({ cmd: 'revive', id: p.id });
+      if (act === 'kick') cmd({ cmd: 'kick', id: p.id });
+      closeSheets();
+    };
+    openSheet('sheet-player');
+  }
+
+  // ------------------------------------------------------------------ sheets
+  var openId = null;
+  function openSheet(id) {
+    closeSheets();
+    openId = id;
+    $(id).hidden = false;
+    $('scrim').hidden = false;
+  }
+  function closeSheets() {
+    if (openId) $(openId).hidden = true;
+    openId = null;
+    $('scrim').hidden = true;
+  }
+  $('scrim').addEventListener('click', closeSheets);
+  var closers = document.querySelectorAll('[data-close]');
+  for (var ci = 0; ci < closers.length; ci++) closers[ci].addEventListener('click', closeSheets);
+  /** Called by the Android back button; true = handled here. */
+  window.onBack = function () { if (openId) { closeSheets(); return true; } return false; };
+
+  // ------------------------------------------------------------------ map drawing
+  function drawZone(ctx, m, lat, lon, radius, finalRadius) {
+    var p = m.project(lat, lon), r = m.metres(radius, lat);
+    var w = m.c.clientWidth, h = m.c.clientHeight;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 0, w, h);
+    ctx.arc(p.x, p.y, r, 0, Math.PI * 2, true);
+    ctx.fillStyle = 'rgba(255,59,92,0.16)';
+    ctx.fill('evenodd');
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+    ctx.lineWidth = 3; ctx.strokeStyle = '#d7ff3e';
+    ctx.stroke();
+    if (finalRadius > 0 && finalRadius < radius) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, m.metres(finalRadius, lat), 0, Math.PI * 2);
+      ctx.setLineDash([6, 6]); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(215,255,62,0.7)';
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function label(ctx, x, y, text, sub) {
+    ctx.font = '600 13px Roboto, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    var w = ctx.measureText(text).width;
+    if (sub) { ctx.font = '11px Roboto, sans-serif'; w = Math.max(w, ctx.measureText(sub).width); }
+    ctx.fillStyle = 'rgba(11,15,14,0.82)';
+    var hh = sub ? 32 : 19;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(x - w / 2 - 6, y, w + 12, hh, 6); else ctx.rect(x - w / 2 - 6, y, w + 12, hh);
+    ctx.fill();
+    ctx.fillStyle = '#eef3ee';
+    ctx.font = '600 13px Roboto, sans-serif';
+    ctx.fillText(text, x, y + 3);
+    if (sub) { ctx.font = '11px Roboto, sans-serif'; ctx.fillStyle = '#8fa39b'; ctx.fillText(sub, x, y + 18); }
+  }
+  function drawMe(ctx, m, me) {
+    var p = m.project(me.lat, me.lon);
+    var r = Math.min(200, m.metres(me.acc || 0, me.lat));
+    if (r > 10) {
+      ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.10)'; ctx.fill();
+    }
+    ctx.beginPath(); ctx.arc(p.x, p.y, 9, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+    ctx.fillStyle = COL[me.team] && me.team ? COL[me.team] : '#4f8cff'; ctx.fill();
+  }
+  function drawMark(ctx, m, k) {
+    var p = m.project(k.lat, k.lon), col = COL[k.team] || '#8fa39b';
+    if (k.kind === 'ping') {
+      ctx.beginPath(); ctx.arc(p.x, p.y, 16, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(53,224,194,0.18)'; ctx.fill();
+      ctx.lineWidth = 3; ctx.strokeStyle = col; ctx.setLineDash([5, 4]); ctx.stroke(); ctx.setLineDash([]);
+      ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2); ctx.fillStyle = col; ctx.fill();
+      label(ctx, p.x, p.y + 20, k.name, 'ping ' + ago(k.age));
+    } else if (k.kind === 'live') {
+      var pulse = 14 + 8 * Math.abs(Math.sin(Date.now() / 300));
+      ctx.beginPath(); ctx.arc(p.x, p.y, pulse, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,59,92,0.3)'; ctx.fill();
+      ctx.beginPath(); ctx.arc(p.x, p.y, 8, 0, Math.PI * 2); ctx.fillStyle = '#ff3b5c'; ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = '#fff'; ctx.stroke();
+      label(ctx, p.x, p.y + 20, k.name, 'NA ŻYWO · poza strefą');
+    } else {
+      ctx.beginPath(); ctx.arc(p.x, p.y, 8, 0, Math.PI * 2); ctx.fillStyle = col; ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = '#0b0f0e'; ctx.stroke();
+      label(ctx, p.x, p.y + 12, k.name, k.age > 20 ? ago(k.age) : null);
+    }
+  }
+  function overlay(ctx, m) {
+    if (!V || !V.me) return;
+    if (V.zone) drawZone(ctx, m, V.zone.lat, V.zone.lon, V.zone.radius, 0);
+    var marks = V.marks || [];
+    for (var i = 0; i < marks.length; i++) drawMark(ctx, m, marks[i]);
+    if (V.me.lat != null) drawMe(ctx, m, V.me);
+  }
+
+  // ------------------------------------------------------------------ game
+  var gameMap = null, follow = true, lastFeedKey = '', toastTimer = null, unread = 0, chatSeen = 0;
+  function ensureGameMap() {
+    if (gameMap) return;
+    gameMap = new TileMap($('game-map'));
+    gameMap.draw = overlay;
+    gameMap.onUserMove = function () { follow = false; };
+  }
+  $('follow').addEventListener('click', function () {
+    follow = true;
+    if (V && V.me.lat != null) gameMap.setView(V.me.lat, V.me.lon, Math.max(gameMap.zoom, 16));
+  });
+  function feedKey(v) { var f = v.feed || []; return f.length ? f[f.length - 1].t + '|' + f[f.length - 1].text : ''; }
+
+  // hold-to-confirm "tagged"
+  (function () {
+    var b = $('tagged'), timer = null;
+    function start(e) {
+      e.preventDefault();
+      if (timer) return;
+      b.classList.add('holding');
+      timer = setTimeout(function () { timer = null; b.classList.remove('holding'); cmd({ cmd: 'tagged' }); }, 1200);
+    }
+    function stop() {
+      if (timer) { clearTimeout(timer); timer = null; }
+      b.classList.remove('holding');
+    }
+    b.addEventListener('pointerdown', start);
+    b.addEventListener('pointerup', stop);
+    b.addEventListener('pointerleave', stop);
+    b.addEventListener('pointercancel', stop);
+    b.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  })();
+
+  $('open-chat').addEventListener('click', function () {
+    openSheet('sheet-chat');
+    unread = 0; chatSeen = V ? V.chat.length : 0;
+    $('game-chat').scrollTop = 1e6;
+  });
+  $('open-roster').addEventListener('click', function () { openSheet('sheet-roster'); });
+  $('game-chat-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var i = $('game-chat-input');
+    if (i.value.trim()) cmd({ cmd: 'chat', text: i.value });
+    i.value = '';
+  });
+  $('quick').addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (b) cmd({ cmd: 'chat', text: b.textContent });
+  });
+  $('end-round-btn').addEventListener('click', function (e) { confirmTap(e.currentTarget, 'Na pewno zakończyć?', function () { cmd({ cmd: 'end' }); }); });
+  $('game-leave').addEventListener('click', function (e) { confirmTap(e.currentTarget, 'Na pewno wyjść?', function () { cmd({ cmd: 'leave' }); }); });
+
+  var QUICK = {
+    H: ['Widzę go!', 'Idę od północy', 'Idę od południa', 'Obstawcie wyjście', 'Zgubiłem trop'],
+    R: ['Łowca blisko mnie!', 'U mnie czysto', 'Zmieniam kryjówkę', 'Uwaga, idą do was'],
+    '': ['Powodzenia!']
+  };
+
+  function rosterHTML(v) {
+    return v.players.map(function (p) {
+      var tag, cls = '';
+      if (p.orig === 'H') tag = 'łowca';
+      else if (p.orig === 'R') {
+        if (p.alive) { tag = 'w grze'; cls = 'ok'; }
+        else { tag = 'złapany' + (p.survived != null ? ' po ' + clock(p.survived * 1000) : ''); cls = 'bad'; }
+      } else tag = 'widz';
+      if (!p.online) tag += ' · offline';
+      return '<div class="trow' + (p.online ? '' : ' off') + '" data-id="' + esc(p.id) + '"><div class="who"><i class="dot ' + p.orig + '"></i><span>' +
+        esc(p.name) + (p.host ? ' ★' : '') + (p.me ? ' (ty)' : '') + '</span></div><span class="tag ' + cls + '">' + tag + '</span></div>';
+    }).join('');
+  }
+
+  function renderGame(v) {
+    var g = v.game, me = v.me;
+    ensureGameMap();
+    if (follow && me.lat != null) gameMap.setView(me.lat, me.lon);
+    gameMap.invalidate();
+
+    var role = $('hud-role'), roleText, roleCls;
+    if (!me.team) { roleText = 'Widz'; roleCls = 'out'; }
+    else if (me.orig === 'R' && !me.alive && me.team !== 'H') { roleText = 'Złapany'; roleCls = 'out'; }
+    else if (me.team === 'H') { roleText = 'Łowca'; roleCls = 'H'; }
+    else { roleText = 'Uciekinier'; roleCls = 'R'; }
+    setText('hud-role', roleText);
+    role.className = 'role ' + roleCls;
+
+    var counting = g.sub === 'countdown';
+    hide('countdown', !counting);
+    if (counting) {
+      setText('countdown-num', String(Math.max(1, Math.ceil(g.toStart / 1000))));
+      setText('countdown-role', me.team === 'H' ? 'Jesteś łowcą' : me.team === 'R' ? 'Jesteś uciekinierem' : 'Oglądasz rundę');
+      $('countdown-role').style.color = COL[me.team] || '#8fa39b';
+    }
+    if (g.sub === 'headstart') { setText('hud-time', clock(g.toHunt)); setText('hud-time-label', 'fory'); }
+    else { setText('hud-time', clock(g.toEnd)); setText('hud-time-label', 'do końca'); }
+    setText('hud-alive', v.counts.alive + '/' + v.counts.runners);
+
+    var chips = '';
+    if (g.sub === 'hunt' && g.toPing >= 0) chips += '<span class="hchip">Ping za <b>' + clock(g.toPing) + '</b></span>';
+    if (g.sub === 'hunt' && g.toShrink >= 0) chips += '<span class="hchip">Strefa maleje za <b>' + clock(g.toShrink) + '</b></span>';
+    if (v.conn !== 'online') chips += '<span class="hchip bad">Brak sieci</span>';
+    if (me.team && (me.lat == null || me.fixAge > 25)) chips += '<span class="hchip bad">Brak sygnału GPS</span>';
+    setHTML('hud-chips', chips);
+
+    var banner = '', bad = false;
+    var aliveRunner = me.orig === 'R' && me.alive && me.team === 'R';
+    if (aliveRunner && v.zone && v.zone.exposed) { banner = 'Łowcy widzą Cię na żywo – wracaj do strefy!'; bad = true; }
+    else if (aliveRunner && v.zone && v.zone.outside) { banner = 'Poza strefą! Łowcy zobaczą Cię za ' + clock(v.zone.exposeIn); bad = true; }
+    else if (g.sub === 'headstart') banner = me.team === 'H' ? 'Czekaj. Uciekinierzy się chowają.' : me.team === 'R' ? 'Chowaj się! Łowcy ruszą, gdy skończą się fory.' : '';
+    hide('hud-banner', !banner);
+    setText('hud-banner', banner);
+    $('hud-banner').className = 'banner' + (bad ? ' bad' : '');
+
+    hide('tagged', !(aliveRunner && !counting));
+
+    // toast for new events
+    var fk = feedKey(v);
+    if (fk && fk !== lastFeedKey) {
+      lastFeedKey = fk;
+      var t = $('toast');
+      t.textContent = v.feed[v.feed.length - 1].text;
+      t.hidden = false;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { t.hidden = true; }, 4500);
+    }
+
+    // chat
+    if (openId === 'sheet-chat') { chatSeen = v.chat.length; unread = 0; }
+    else unread = Math.max(0, v.chat.length - chatSeen);
+    hide('chat-badge', !unread);
+    setText('chat-badge', String(unread));
+    setText('chat-title', me.team === 'H' ? 'Czat łowców' : me.team === 'R' ? 'Czat uciekinierów' : 'Czat');
+    if (setHTML('game-chat', chatHTML(v.chat.filter(function (c) { return c.scope !== '*'; }), 'Tylko Twoja drużyna widzi te wiadomości.'))) $('game-chat').scrollTop = 1e6;
+    setHTML('quick', (QUICK[me.team] || QUICK['']).map(function (q) { return '<button type="button">' + q + '</button>'; }).join(''));
+
+    setHTML('roster', rosterHTML(v));
+    setHTML('feed', (v.feed || []).slice(-6).reverse().map(function (f) { return '<p>' + esc(f.text) + '</p>'; }).join(''));
+    hide('end-round-btn', !me.host);
+  }
+  // live markers pulse
+  setInterval(function () {
+    if (screen === 'game' && gameMap && V && (V.marks || []).some(function (k) { return k.kind === 'live'; })) gameMap.invalidate();
+  }, 80);
+
+  // ------------------------------------------------------------------ end
+  var endMap = null, endFitted = false;
+  $('end-lobby').addEventListener('click', function () { cmd({ cmd: 'lobby' }); });
+  $('end-leave').addEventListener('click', function (e) { confirmTap(e.currentTarget, 'Na pewno wyjść?', function () { cmd({ cmd: 'leave' }); }); });
+  function renderEnd(v) {
+    var g = v.game, w = g.winner;
+    $('end-result').className = 'result ' + (w || '');
+    setText('end-round', 'Runda ' + g.round);
+    setText('end-title', w === 'H' ? 'Wygrywają łowcy' : w === 'R' ? 'Wygrywają uciekinierzy' : 'Runda przerwana');
+    var sub = '';
+    if (g.reason === 'caught') sub = 'Wszyscy uciekinierzy zostali złapani.';
+    else if (g.reason === 'time') sub = 'Czas minął. Dotrwało: ' + v.counts.alive + ' z ' + v.counts.runners + '.';
+    else if (g.reason === 'left') sub = 'Uciekinierzy opuścili grę.';
+    else sub = 'Gospodarz zakończył rundę przed czasem.';
+    if (w && v.me.orig) sub += v.me.orig === w ? ' Brawo!' : ' Następnym razem!';
+    setText('end-sub', sub);
+
+    var runners = v.players.filter(function (p) { return p.orig === 'R'; });
+    runners.sort(function (a, b) { return (b.alive - a.alive) || ((b.survived || 0) - (a.survived || 0)); });
+    setHTML('end-runners', runners.map(function (p) {
+      return '<div class="trow"><div class="who"><i class="dot R"></i><span>' + esc(p.name) + (p.me ? ' (ty)' : '') + '</span></div><span class="tag ' +
+        (p.alive ? 'ok">dotrwał do końca' : 'bad">złapany po ' + clock((p.survived || 0) * 1000)) + '</span></div>';
+    }).join('') || '<div class="trow"><span class="dim">brak</span></div>');
+    setHTML('end-hunters', v.players.filter(function (p) { return p.orig === 'H'; }).map(chip).join('') || '<span class="dim">brak</span>');
+
+    if (!endMap) { endMap = new TileMap($('end-map')); endMap.draw = overlay; }
+    if (!endFitted && $('end-map').clientWidth) {
+      endFitted = true;
+      var pts = (v.marks || []).slice();
+      if (v.me.lat != null) pts.push(v.me);
+      if (v.zone) endMap.fitCircle(v.zone.lat, v.zone.lon, v.zone.radius);
+      else if (pts.length) {
+        var la = 0, lo = 0, far = 60;
+        pts.forEach(function (p) { la += p.lat; lo += p.lon; });
+        la /= pts.length; lo /= pts.length;
+        pts.forEach(function (p) {
+          var d = Math.hypot((p.lat - la) * 111320, (p.lon - lo) * 111320 * Math.cos(la * Math.PI / 180));
+          far = Math.max(far, d);
+        });
+        endMap.fitCircle(la, lo, far * 1.2);
+      }
+    }
+    endMap.invalidate();
+    hide('end-lobby', !v.me.host);
+    hide('end-wait', v.me.host);
+  }
+
+  poll1();
+})();
+
+</script>
+</body>
+</html>

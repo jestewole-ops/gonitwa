@@ -905,7 +905,7 @@ window.GONITWA_CONFIG = {"servers": [{"tcp": "tls://broker.emqx.io:8883", "ws": 
     if (game.s.convert) me.team = HUNTER;
     publishSelf();
     sendRaw('pg/' + myId, null, true);
-    say('tag', 'Odpadasz z rundy. ' + leftText(aliveRunners()));
+    say('tag', (game.s.convert ? 'Dołączasz do tropicieli. ' : 'Odpadasz z rundy. ') + leftText(aliveRunners()));
   }
   function sendChat(text) {
     if (mode !== IN || text == null) return;
@@ -1010,7 +1010,7 @@ window.GONITWA_CONFIG = {"servers": [{"tcp": "tls://broker.emqx.io:8883", "ws": 
     players[id] = p;
     if (mode === IN && game && phase() === 'running' && p.round === game.round && !p.alive && old && (old.alive || old.round !== p.round)) {
       delete pingRecs[id];
-      say('tag', p.name + ' odpada! ' + leftText(aliveRunners()));
+      say('tag', p.name + (game.s.convert ? ' dołącza do tropicieli! ' : ' odpada! ') + leftText(aliveRunners()));
     }
     if (mode === IN && !old && phase() === 'lobby') note('Nowy gracz: ' + p.name);
   }

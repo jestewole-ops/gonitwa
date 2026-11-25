@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Polityka prywatności – Gonitwa</title>
+<meta name="theme-color" content="#0b0f0e">
+<link rel="stylesheet" href="doc.css">
+</head>
+<body>
+<nav><a href="../index.html" class="back" onclick="if (history.length > 1) { history.back(); return false; } window.close(); return true;">← Wróć do gry</a></nav>
+<main>
+<h1>Polityka prywatności aplikacji Gonitwa</h1>
+<p class="meta">Wersja 1.0 · obowiązuje od 25 listopada 2026 r.</p>
+
+<p class="lead">W skrócie: Gonitwa nie ma kont, reklam ani narzędzi śledzących. Do gry wystarczy pseudonim. Twoja pozycja i wiadomości trafiają tylko do uczestników tej samej gry, są szyfrowane kluczem wyprowadzonym z kodu gry i znikają z serwera najpóźniej po 24 godzinach.</p>
+
+<h2>1. Administrator danych</h2>
+<p>Administratorem danych osobowych przetwarzanych w związku z korzystaniem z aplikacji Gonitwa (aplikacja na Androida oraz wersja w przeglądarce) jest Kuba Kasprzycki („Operator”). Kontakt we wszystkich sprawach dotyczących danych: <a href="mailto:gonitwa.biznes@gmail.com">gonitwa.biznes@gmail.com</a>.</p>
+
+<h2>2. Jakie dane przetwarzamy i po co</h2>
+<table>
+<tr><th>Dane</th><th>Kiedy i po co</th><th>Podstawa prawna</th></tr>
+<tr><td><b>Pseudonim</b></td><td>Wpisujesz go sam(a). Widzą go uczestnicy gry, do której dołączysz. Nie musi to być prawdziwe imię – zalecamy, żeby nim nie był.</td><td rowspan="3">art. 6 ust. 1 lit. b RODO – świadczenie usługi zgodnie z <a href="regulamin.html">Regulaminem</a></td></tr>
+<tr><td><b>Dokładna lokalizacja (GPS)</b></td><td>Tylko w czasie gry, po udzieleniu zgody w systemie. Na Androidzie również przy wygaszonym ekranie – wtedy widać stałe powiadomienie. Pozycja jest wysyłana do uczestników tej samej gry zgodnie z jej zasadami: Twojej drużynie na bieżąco, przeciwnikom tylko w chwili „namiaru” albo gdy zbyt długo przebywasz poza terenem gry. Poza grą aplikacja nie korzysta z lokalizacji.</td></tr>
+<tr><td><b>Wiadomości czatu i przebieg gry</b></td><td>Wiadomości, wybór drużyny, informacja o dopadnięciu, ustawienia rundy – potrzebne, żeby gra działała u wszystkich uczestników.</td></tr>
+<tr><td><b>Dane techniczne połączenia</b> (adres IP, czas połączenia, losowy identyfikator klienta)</td><td>Widzi je serwer gry i dostawca map w chwili połączenia, tak jak przy każdej usłudze internetowej. Służą do przekazywania danych i ochrony przed nadużyciami.</td><td>art. 6 ust. 1 lit. f RODO – prawnie uzasadniony interes: bezpieczeństwo i działanie usługi</td></tr>
+</table>
+<p>Nie przetwarzamy danych w celach marketingowych, nie profilujemy, nie sprzedajemy danych i nie podejmujemy decyzji w sposób zautomatyzowany w rozumieniu art. 22 RODO. Aplikacja nie zawiera reklam ani zewnętrznych narzędzi analitycznych.</p>
+
+<h2>3. Szyfrowanie – dlaczego serwer nie zna Twojej pozycji</h2>
+<p>Każda gra ma kod (8 znaków). Z kodu, na Twoim urządzeniu, wyliczany jest klucz szyfrujący (PBKDF2-SHA-256) oraz adres kanału na serwerze. Pseudonim, pozycja, czat i stan gry są szyfrowane algorytmem AES-256-GCM, zanim opuszczą urządzenie. Serwer gry tylko przekazuje zaszyfrowane wiadomości między uczestnikami – nie zna kodu, więc nie może ich odczytać. Kod gry znają wyłącznie osoby, którym go przekażesz: traktuj go jak hasło do gry.</p>
+
+<h2>4. Jak długo przechowujemy dane</h2>
+<ul>
+<li><b>Na serwerze gry:</b> każda wiadomość ma ustawiony czas wygaśnięcia 24 godziny – po tym czasie serwer usuwa ją automatycznie. Zapisy stanu gry są ponadto kasowane, gdy wychodzisz z gry, a gdy prowadzący kończy grę – wszystkie zapisy tej gry.</li>
+<li><b>Na Twoim urządzeniu</b> zapisane są tylko: pseudonim, kod ostatniej gry, ostatnie ustawienia rundy, informacja o akceptacji Regulaminu i losowy identyfikator gracza. Usuniesz je przyciskiem „Usuń moje dane z tego urządzenia” (ekran „O aplikacji”), czyszcząc dane aplikacji lub odinstalowując ją; w przeglądarce – czyszcząc dane witryny.</li>
+<li><b>Dane techniczne</b> u dostawców (np. logi z adresami IP) – przez okres określony w zasadach danego dostawcy.</li>
+</ul>
+
+<h2>5. Odbiorcy danych</h2>
+<ul>
+<li><b>Uczestnicy tej samej gry</b> – w zakresie opisanym w pkt 2.</li>
+<li><b>Operatorzy serwerów gry</b> (serwerów MQTT, przez które przechodzą wiadomości gry). Obecnie są to publiczne serwery broker.emqx.io (EMQ Technologies), broker.hivemq.com (HiveMQ) i test.mosquitto.org (Eclipse Foundation). Otrzymują wyłącznie dane zaszyfrowane oraz dane techniczne połączenia. O zmianie serwera poinformujemy w tej polityce.</li>
+<li><b>OpenFreeMap</b> (tiles.openfreemap.org) – dostawca podkładu mapy. Pobierając fragmenty mapy, Twoje urządzenie wysyła mu adres IP i informację, jaki obszar mapy jest wyświetlany. OpenFreeMap działa jako niezależny administrator tych danych technicznych; nie używa plików cookie ani kont.</li>
+<li><b>Wersja w przeglądarce</b> jest udostępniana przez GitHub Pages (GitHub, Inc., USA), który zapisuje adresy IP odwiedzających w celach bezpieczeństwa.</li>
+<li><b>Google</b> – jeśli pobierasz aplikację ze sklepu Google Play, dane związane z pobraniem przetwarza Google na własnych zasadach.</li>
+</ul>
+<p>Część dostawców może przetwarzać dane techniczne poza Europejskim Obszarem Gospodarczym. Dlatego pozycja, pseudonim i wiadomości są szyfrowane, zanim opuszczą urządzenie – poza urządzeniami uczestników gry nikt ich nie odczyta.</p>
+
+<h2>6. Uprawnienia aplikacji na Androidzie</h2>
+<ul>
+<li><b>Lokalizacja (dokładna i przybliżona)</b> – pokazywanie pozycji w grze; przed pytaniem systemu aplikacja wyjaśnia, do czego jej potrzebuje.</li>
+<li><b>Usługa pierwszoplanowa typu „lokalizacja”</b> – żeby gra działała przy wygaszonym ekranie; zawsze z widocznym powiadomieniem, tylko w czasie gry.</li>
+<li><b>Powiadomienia i wibracje</b> – alarmy z gry (namiar, kurczący się teren, koniec rundy).</li>
+<li><b>Internet, blokada uśpienia</b> – połączenie z serwerem gry w czasie rundy.</li>
+</ul>
+<p>Aplikacja nie prosi o dostęp do lokalizacji w tle poza aktywną grą, kontaktów, zdjęć, mikrofonu ani aparatu.</p>
+
+<h2>7. Twoje prawa</h2>
+<p>Masz prawo do dostępu do danych, ich sprostowania, usunięcia, ograniczenia przetwarzania, przenoszenia danych oraz wniesienia sprzeciwu wobec przetwarzania opartego na prawnie uzasadnionym interesie. Napisz na <a href="mailto:gonitwa.biznes@gmail.com">gonitwa.biznes@gmail.com</a>. Ponieważ aplikacja nie ma kont, a treść gier jest zaszyfrowana, Operator zwykle nie jest w stanie przypisać danych do konkretnej osoby (art. 11 RODO) – najszybciej usuniesz swoje dane sam(a), jak opisano w pkt 4. Masz też prawo wnieść skargę do Prezesa Urzędu Ochrony Danych Osobowych (ul. Stawki 2, 00-193 Warszawa, uodo.gov.pl).</p>
+
+<h2>8. Wiek</h2>
+<p>Gonitwa jest przeznaczona dla osób, które ukończyły 16 lat. Nie zbieramy świadomie danych osób młodszych.</p>
+
+<h2>9. Pamięć przeglądarki (wersja w przeglądarce)</h2>
+<p>Wersja w przeglądarce zapisuje te same dane co aplikacja (pkt 4) w pamięci lokalnej przeglądarki (localStorage). Są one niezbędne do działania usługi, o którą prosisz, i nie służą do śledzenia. Nie używamy plików cookie.</p>
+
+<h2>10. Zmiany</h2>
+<p>O istotnych zmianach tej polityki poinformujemy w aplikacji przed ich wejściem w życie. Aktualna wersja jest zawsze dostępna w aplikacji (ekran „O aplikacji”) i pod adresem, pod którym ją czytasz.</p>
+</main>
+</body>
+</html>

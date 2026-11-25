@@ -7,6 +7,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="manifest" href="manifest.webmanifest">
+<meta name="description" content="Gonitwa – gra terenowa z GPS: tropiciele kontra zbiegowie.">
 <meta name="theme-color" content="#0b0f0e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -207,45 +208,91 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
 .sheet { padding-bottom: calc(18px + env(safe-area-inset-bottom)); }
 .web-note { color: var(--dim); font-size: 13px; border-left: 2px solid var(--acid); padding-left: 10px; margin-top: 18px; }
 
+/* ---------- first run, disclosure, about ---------- */
+.small { font-size: 13px; }
+a { color: var(--acid); }
+.consent { margin-top: 26px; display: flex; flex-direction: column; gap: 14px; }
+.check { display: flex; gap: 12px; align-items: flex-start; background: var(--panel); border: 1px solid var(--line);
+  border-radius: 12px; padding: 12px 14px; font-size: 15px; }
+.check input { width: 22px; height: 22px; flex: none; margin: 1px 0 0; accent-color: var(--acid); }
+#perm-text p { margin: 8px 0; color: var(--text); font-size: 14px; }
+#perm-text ul { margin: 6px 0 10px; padding-left: 18px; color: var(--dim); font-size: 13px; }
+#perm-text li { margin: 4px 0; }
+.perm-actions { display: flex; gap: 8px; }
+.card.flash { animation: flash .9s ease-out 2; }
+@keyframes flash { 30% { box-shadow: 0 0 0 4px rgba(215,255,62,.45); } }
+.home-links { text-align: center; font-size: 13px; color: var(--dim); margin-top: 26px; }
+.home-links a { color: var(--dim); }
+.row-note { margin: -4px 0 0; padding: 0 0 10px; font-size: 12px; color: var(--dim); border-bottom: 1px solid var(--line); }
+.about p { margin: 8px 0; }
+.about .btn { width: 100%; margin: 6px 0 4px; }
+.attrib { position: absolute; right: 0; bottom: 0; z-index: 2; max-width: 92%; padding: 2px 6px; border-radius: 6px 0 0 0;
+  background: rgba(11,15,14,.72); color: #cfd8d3; font: 10px/1.35 Roboto, system-ui, sans-serif; text-align: right; }
+.attrib a { color: #cfd8d3; text-decoration: underline; }
+.screen.game .attrib { z-index: 4; bottom: env(safe-area-inset-bottom); }
+.screen.game .bottom { padding-bottom: calc(26px + env(safe-area-inset-bottom)); }
+/* 8-character codes: the code gets its own line, the buttons go below it */
+.lobby-head { flex-wrap: wrap; align-items: flex-end; }
+.lobby-head > div:first-child { flex: 1 1 100%; }
+.code { font-size: 42px; letter-spacing: .12em; white-space: nowrap; }
+.head-actions { margin-left: auto; }
+
 </style>
 </head>
 <body>
+
+<!-- ============ FIRST RUN ============ -->
+<section id="s-welcome" class="screen">
+  <div class="home-top">
+    <div class="logo"><span class="logo-dot"></span>GONITWA</div>
+    <p class="tagline">Gra terenowa z GPS dla grupy znajomych. Jedni tropią, drudzy uciekają – a mapa zdradza tylko tyle, ile pozwalają zasady.</p>
+  </div>
+  <div class="consent">
+    <label class="check"><input type="checkbox" id="c-age"><span>Mam ukończone <b>16 lat</b>.</span></label>
+    <label class="check"><input type="checkbox" id="c-terms"><span>Akceptuję <a href="legal/regulamin.html" data-doc>Regulamin</a>. Wiem, jak gra korzysta z danych – opisuje to <a href="legal/prywatnosc.html" data-doc>Polityka prywatności</a>.</span></label>
+    <p class="dim small">Gonitwa nie ma kont ani reklam. Do gry wystarczy pseudonim, a pozycja trafia tylko do uczestników tej samej gry – w postaci zaszyfrowanej.</p>
+    <button class="btn acid big" id="c-ok" disabled>Dalej</button>
+  </div>
+</section>
 
 <!-- ============ HOME ============ -->
 <section id="s-home" class="screen">
   <div class="home-top">
     <div class="logo"><span class="logo-dot"></span>GONITWA</div>
-    <p class="tagline">Chowany na prawdziwej mapie. Łowcy kontra uciekinierzy.</p>
+    <p class="tagline">Podchody z GPS-em: <b class="c-hunt">tropiciele</b> kontra <b class="c-run">zbiegowie</b>.</p>
   </div>
   <div class="card" id="perm-card" hidden>
-    <b>Potrzebna lokalizacja</b>
-    <p id="perm-text">Gra pokazuje graczy na mapie, więc wymaga dostępu do lokalizacji i powiadomień.</p>
-    <button class="btn acid" id="perm-btn">Zezwól</button>
+    <b id="perm-title">Lokalizacja w czasie gry</b>
+    <div id="perm-text"></div>
+    <div class="perm-actions">
+      <button class="btn acid" id="perm-btn">Zgadzam się</button>
+    </div>
   </div>
   <label class="field">
-    <span>Twoje imię</span>
-    <input id="name" maxlength="16" autocomplete="off" placeholder="np. Kuba">
+    <span>Twój pseudonim</span>
+    <input id="name" maxlength="16" autocomplete="off" placeholder="np. Szybki Lis">
   </label>
-  <button class="btn acid big" id="create">Załóż grę</button>
-  <div class="or"><span>albo dołącz kodem</span></div>
+  <button class="btn acid big" id="create">Nowa gra</button>
+  <div class="or"><span>masz kod? dołącz</span></div>
   <div class="join-row">
-    <input id="code" maxlength="7" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="KOD GRY">
+    <input id="code" maxlength="9" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="KOD GRY">
     <button class="btn" id="join">Dołącz</button>
   </div>
   <div class="error" id="home-error" hidden></div>
-  <p class="web-note" id="web-note" hidden>Wersja przeglądarkowa: podczas rundy trzymaj tę stronę otwartą i ekran włączony – po zablokowaniu telefonu przeglądarka przestaje wysyłać pozycję.</p>
+  <p class="web-note" id="web-note" hidden>Grasz w przeglądarce: przez całą rundę ta karta musi być otwarta, a ekran włączony. Po zablokowaniu telefonu przeglądarka przestaje podawać pozycję i drużyna Cię zgubi.</p>
   <details class="how">
-    <summary>Jak grać</summary>
+    <summary>Zasady w skrócie</summary>
     <ol>
-      <li>Jedna osoba zakłada grę i podaje reszcie 6-znakowy kod.</li>
-      <li>Dzielicie się na <b class="c-hunt">łowców</b> i <b class="c-run">uciekinierów</b>. Gospodarz ustawia czas, fory, pingi i strefę.</li>
-      <li>Uciekinierzy dostają fory na ukrycie się. Potem łowcy ruszają.</li>
-      <li>Co kilka minut łowcy dostają <b>ping</b> – ostatnią pozycję każdego uciekiniera.</li>
-      <li>Kto wyjdzie poza strefę na zbyt długo, jest widoczny dla łowców na żywo.</li>
-      <li>Złapany uciekinier potwierdza to w aplikacji. Wygrywają ci, którzy dotrwają do końca – albo łowcy, jeśli złapią wszystkich.</li>
+      <li><b>Zbierzcie ekipę.</b> Prowadzący zakłada grę i wysyła reszcie kod albo link. Każdy wybiera stronę: <b class="c-hunt">tropiciele</b> lub <b class="c-run">zbiegowie</b>.</li>
+      <li><b>Czas na ukrycie.</b> Po starcie zbiegowie mają chwilę przewagi, a tropiciele czekają na sygnał.</li>
+      <li><b>Pościg.</b> Tropiciele nie śledzą zbiegów bez przerwy. Co pewien czas dostają <b>namiar</b> – pozycję każdego zbiega z tamtej chwili. Swoją drużynę każdy widzi na bieżąco.</li>
+      <li><b>Teren gry.</b> Prowadzący może zaznaczyć na mapie koło, które z czasem się kurczy. Kto zostanie poza nim zbyt długo, pokazuje się tropicielom na bieżąco.</li>
+      <li><b>Dopadnięty?</b> Gdy tropiciel Cię dotknie, przytrzymaj „Dopadli mnie”. W trybie Przemiana przechodzisz wtedy do tropicieli.</li>
+      <li><b>Wynik.</b> Zbiegowie wygrywają, gdy choć jeden przetrwa do końca czasu. Tropiciele – gdy dopadną wszystkich.</li>
     </ol>
-    <p class="safe">Grajcie w bezpiecznym miejscu, uważajcie na ruch uliczny i nie wchodźcie na teren prywatny.</p>
+    <p class="safe">Gonitwa toczy się w prawdziwym świecie. Wybierzcie bezpieczne miejsce, przed biegiem przez jezdnię zawsze się zatrzymaj, omijajcie tory, budowy, wodę i cudze posesje i nie patrz w telefon w biegu. Każdy gra na własną odpowiedzialność.</p>
   </details>
+  <p class="home-links"><a href="#" id="open-about">O aplikacji</a> · <a href="legal/regulamin.html" data-doc>Regulamin</a> · <a href="legal/prywatnosc.html" data-doc>Prywatność</a></p>
 </section>
 
 <!-- ============ CONNECTING ============ -->
@@ -262,10 +309,10 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
   <header class="lobby-head">
     <div>
       <div class="eyebrow">Kod gry</div>
-      <div class="code" id="lobby-code">------</div>
+      <div class="code" id="lobby-code">---- ----</div>
     </div>
     <div class="head-actions">
-      <button class="btn small" id="share">Udostępnij</button>
+      <button class="btn small" id="share">Zaproś</button>
       <button class="btn small ghost" id="lobby-leave">Wyjdź</button>
     </div>
   </header>
@@ -274,44 +321,45 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
 
   <div class="teams">
     <div class="team hunt">
-      <h3>Łowcy <span id="cnt-h"></span></h3>
+      <h3>Tropiciele <span id="cnt-h"></span></h3>
       <div class="chips" id="team-h"></div>
-      <button class="btn small team-btn" data-team="H">Dołącz</button>
+      <button class="btn small team-btn" data-team="H">Wybieram</button>
     </div>
     <div class="team run">
-      <h3>Uciekinierzy <span id="cnt-r"></span></h3>
+      <h3>Zbiegowie <span id="cnt-r"></span></h3>
       <div class="chips" id="team-r"></div>
-      <button class="btn small team-btn" data-team="R">Dołącz</button>
+      <button class="btn small team-btn" data-team="R">Wybieram</button>
     </div>
   </div>
   <div class="noteam" id="noteam-wrap" hidden>
-    <span class="eyebrow">Bez drużyny</span>
+    <span class="eyebrow">Jeszcze bez strony</span>
     <div class="chips" id="team-none"></div>
   </div>
 
-  <h3 class="sec">Zasady rundy</h3>
+  <h3 class="sec">Ustawienia rundy</h3>
   <div id="settings-host" class="settings" hidden>
-    <label class="row"><span>Czas polowania</span>
+    <label class="row"><span>Tryb gry</span>
+      <select id="set-mode"><option value="0">Do ostatniego</option><option value="1">Przemiana</option></select></label>
+    <p class="row-note" id="mode-note"></p>
+    <label class="row"><span>Długość rundy</span>
       <select id="set-round"></select></label>
-    <label class="row"><span>Fory dla uciekinierów</span>
+    <label class="row"><span>Czas na ukrycie</span>
       <select id="set-head"></select></label>
-    <label class="row"><span>Ping pozycji</span>
+    <label class="row"><span>Namiar na zbiegów</span>
       <select id="set-ping"></select></label>
-    <label class="row"><span>Złapani dołączają do łowców</span>
-      <input type="checkbox" id="set-convert" class="sw"></label>
-    <label class="row"><span>Strefa gry</span>
+    <label class="row"><span>Teren gry</span>
       <input type="checkbox" id="set-zone" class="sw"></label>
     <div id="zone-opts" hidden>
-      <label class="row col"><span>Promień strefy: <b id="lbl-radius"></b></span>
+      <label class="row col"><span>Promień terenu: <b id="lbl-radius"></b></span>
         <input type="range" id="set-radius" min="50" max="2000" step="10"></label>
-      <label class="row"><span>Czas na powrót do strefy</span>
+      <label class="row"><span>Czas na powrót na teren</span>
         <select id="set-grace"></select></label>
-      <label class="row"><span>Strefa się kurczy</span>
+      <label class="row"><span>Teren się kurczy</span>
         <input type="checkbox" id="set-shrink" class="sw"></label>
       <div id="shrink-opts" hidden>
         <label class="row"><span>Kurczy się co</span>
           <select id="set-shrinksec"></select></label>
-        <label class="row col"><span>Promień na końcu: <b id="lbl-final"></b></span>
+        <label class="row col"><span>Promień końcowy: <b id="lbl-final"></b></span>
           <input type="range" id="set-final" min="20" max="2000" step="10"></label>
       </div>
     </div>
@@ -323,7 +371,7 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
       <div class="map-hint" id="zone-hint"></div>
       <div class="zoom"><button data-z="1">+</button><button data-z="-1">−</button></div>
     </div>
-    <button class="btn small" id="zone-here" hidden>Środek strefy = moja pozycja</button>
+    <button class="btn small" id="zone-here" hidden>Środek tam, gdzie stoję</button>
   </div>
 
   <h3 class="sec">Czat</h3>
@@ -334,7 +382,7 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
   </form>
 
   <div class="lobby-foot">
-    <button class="btn acid big" id="start" hidden>Start rundy</button>
+    <button class="btn acid big" id="start" hidden>Zaczynamy</button>
     <p class="dim center-text" id="wait-host" hidden></p>
   </div>
 </section>
@@ -346,15 +394,15 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     <div class="hud-row">
       <div class="role" id="hud-role"></div>
       <div class="timer"><b id="hud-time">0:00</b><span id="hud-time-label"></span></div>
-      <div class="alive"><b id="hud-alive"></b><span>uciekinierów</span></div>
+      <div class="alive"><b id="hud-alive"></b><span>zbiegów w grze</span></div>
     </div>
     <div class="chip-row" id="hud-chips"></div>
     <div class="banner" id="hud-banner" hidden></div>
   </div>
-  <div class="zoom game-zoom"><button data-z="1">+</button><button data-z="-1">−</button><button id="follow" title="Wyśrodkuj">◎</button></div>
+  <div class="zoom game-zoom"><button data-z="1">+</button><button data-z="-1">−</button><button id="follow" title="Wyśrodkuj na mnie">◎</button></div>
   <div class="toast" id="toast" hidden></div>
   <div class="bottom">
-    <button class="btn hold" id="tagged" hidden><span class="hold-fill"></span><span class="hold-label">Złapali mnie <small>przytrzymaj</small></span></button>
+    <button class="btn hold" id="tagged" hidden><span class="hold-fill"></span><span class="hold-label">Dopadli mnie <small>przytrzymaj</small></span></button>
     <div class="bottom-row">
       <button class="btn" id="open-chat">Czat<span class="badge" id="chat-badge" hidden></span></button>
       <button class="btn" id="open-roster">Gracze</button>
@@ -371,13 +419,13 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     <p id="end-sub"></p>
   </div>
   <div class="map-box end-map"><canvas id="end-map"></canvas></div>
-  <h3 class="sec">Uciekinierzy</h3>
+  <h3 class="sec">Zbiegowie</h3>
   <div class="table" id="end-runners"></div>
-  <h3 class="sec">Łowcy</h3>
+  <h3 class="sec">Tropiciele</h3>
   <div class="chips" id="end-hunters"></div>
   <div class="lobby-foot">
-    <button class="btn acid big" id="end-lobby" hidden>Nowa runda</button>
-    <p class="dim center-text" id="end-wait" hidden>Gospodarz zdecyduje o kolejnej rundzie.</p>
+    <button class="btn acid big" id="end-lobby" hidden>Kolejna runda</button>
+    <p class="dim center-text" id="end-wait" hidden>Prowadzący zdecyduje, czy gracie dalej.</p>
     <button class="btn ghost" id="end-leave">Wyjdź z gry</button>
   </div>
 </section>
@@ -406,7 +454,24 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
   <div class="sheet-head"><b id="player-name"></b><button class="x" data-close>✕</button></div>
   <div class="sheet-foot" id="player-actions"></div>
 </div>
+<div class="sheet" id="sheet-about" hidden>
+  <div class="sheet-head"><b>O aplikacji</b><button class="x" data-close>✕</button></div>
+  <div class="about">
+    <p><b>Gonitwa</b> <span class="dim" id="about-version"></span><br>Gra terenowa z GPS: tropiciele kontra zbiegowie.</p>
+    <p id="about-contact" hidden></p>
+    <p><a href="legal/regulamin.html" data-doc>Regulamin</a> · <a href="legal/prywatnosc.html" data-doc>Polityka prywatności</a></p>
+    <h3 class="sec">Twoje dane</h3>
+    <p class="dim small">Nie ma kont. Na tym urządzeniu zapisane są tylko: pseudonim, kod ostatniej gry, ustawienia rundy i Twoje zgody. Dane gry na serwerze są zaszyfrowane kluczem, którego serwer nie zna, i wygasają najpóźniej po 24 godzinach.</p>
+    <button class="btn danger" id="wipe">Usuń moje dane z tego urządzenia</button>
+    <h3 class="sec">Mapa i licencje</h3>
+    <p class="dim small" id="about-map"></p>
+    <p class="dim small">Kod aplikacji, wygląd i teksty: własne. Nie używamy zewnętrznych bibliotek ani czcionek do pobrania.</p>
+  </div>
+</div>
 
+<script>
+window.GONITWA_CONFIG = {"servers": [{"tcp": "tls://broker.emqx.io:8883", "ws": "wss://broker.emqx.io:8084/mqtt"}, {"tcp": "tls://broker.hivemq.com:8883", "ws": "wss://broker.hivemq.com:8884/mqtt"}, {"tcp": "tcp://test.mosquitto.org:1883", "ws": "wss://test.mosquitto.org:8081/mqtt"}, {"tcp": "tcp://broker.emqx.io:1883", "ws": "wss://broker.emqx.io:8084/mqtt"}, {"tcp": "tcp://broker.hivemq.com:1883", "ws": "wss://broker.hivemq.com:8884/mqtt"}, {"tcp": "tcp://test.mosquitto.org:1883", "ws": "wss://test.mosquitto.org:8081/mqtt"}], "create": [0, 1, 2], "map": {"type": "vector", "tilejson": "https://tiles.openfreemap.org/planet", "credits": [["OpenFreeMap", "https://openfreemap.org"], ["© OpenMapTiles", "https://www.openmaptiles.org/"], ["Dane z OpenStreetMap", "https://www.openstreetmap.org/copyright"]]}, "webUrl": "https://jestewole-ops.github.io/gonitwa/", "contact": "gonitwa.biznes@gmail.com", "version": "1.0.0 (web)"};
+</script>
 <script>
 /* Gonitwa – browser engine (iPhone / any browser). A JavaScript port of pl.gonitwa.core.GameEngine that
  * speaks exactly the same protocol as the Android app (same brokers, topics, AES-GCM key from the game code),
@@ -420,24 +485,28 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
   var HUNTER = 'H', RUNNER = 'R';
   var NONE = 0, CREATING = 1, JOINING = 2, IN = 3;
   var SYNC_MS = 1800, COUNTDOWN_MS = 8000;
-  var ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  // Same order as GameEngine.defaultEndpoints(): index N here is the WebSocket door of TCP endpoint N there.
-  var ENDPOINTS = [
-    'wss://broker.emqx.io:8084/mqtt',
-    'wss://broker.hivemq.com:8884/mqtt',
-    'wss://test.mosquitto.org:8081/mqtt',
-    'wss://broker.emqx.io:8084/mqtt',
-    'wss://broker.hivemq.com:8884/mqtt',
-    'wss://test.mosquitto.org:8081/mqtt'
-  ];
-  var CREATE_ORDER = [0, 1, 2];
-  if (qs.get('ws')) { ENDPOINTS = ENDPOINTS.map(function () { return qs.get('ws'); }); }   // tests: one local broker
+  var ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', CODE_LEN = 8, ITERATIONS = 100000;
+  var TOPIC_ROOT = 'gnt2/', EXPIRY_S = 24 * 3600;
+  // Servers come from config.json (inlined by the web build as window.GONITWA_CONFIG). Index N here must be
+  // the same server as index N in the Android app, which reads the same file: the game code encodes the index.
+  var CFG = window.GONITWA_CONFIG || {};
+  var SERVERS = (CFG.servers || []).filter(function (x) { return x && x.ws; });
+  if (!SERVERS.length) SERVERS = [{ ws: 'wss://broker.emqx.io:8084/mqtt' }];
+  var CREATE_ORDER = (CFG.create || [0]).filter(function (i) { return i >= 0 && i < SERVERS.length; });
+  if (!CREATE_ORDER.length) CREATE_ORDER = [0];
+  if (qs.get('ws')) {                                         // tests: every index points at one local broker
+    SERVERS = SERVERS.map(function () { return { ws: qs.get('ws'), user: qs.get('u') || '', pass: qs.get('p') || '' }; });
+  }
+  var ENDPOINTS = SERVERS.map(function (x) { return x.ws; });
   var enc = new TextEncoder(), dec = new TextDecoder();
 
   // ------------------------------------------------------------------ storage
   var mem = {};
   function load(k) { try { var v = localStorage.getItem('gonitwa.' + k); return v == null ? (k in mem ? mem[k] : null) : v; } catch (e) { return k in mem ? mem[k] : null; } }
-  function save(k, v) { mem[k] = v; try { localStorage.setItem('gonitwa.' + k, v); } catch (e) { /* private mode */ } }
+  function save(k, v) {
+    if (v == null) { delete mem[k]; try { localStorage.removeItem('gonitwa.' + k); } catch (e) { } return; }
+    mem[k] = v; try { localStorage.setItem('gonitwa.' + k, v); } catch (e) { /* private mode */ }
+  }
   function now() { return Date.now(); }
   function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
   function int(m, k, d) { var v = m ? m[k] : undefined; return typeof v === 'number' && isFinite(v) ? Math.trunc(v) : d; }
@@ -458,26 +527,36 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     var first;
     do { first = rnd(ALPHABET.length); } while (first % count !== brokerIdx);
     var s = ALPHABET.charAt(first);
-    for (var i = 1; i < 6; i++) s += ALPHABET.charAt(rnd(ALPHABET.length));
+    for (var i = 1; i < CODE_LEN; i++) s += ALPHABET.charAt(rnd(ALPHABET.length));
     return s;
   }
+  function prettyCode(c) { return c && c.length === CODE_LEN ? c.substring(0, 4) + ' ' + c.substring(4) : c; }
   function brokerIndex(code, count) { var i = ALPHABET.indexOf(code.charAt(0)); return i < 0 ? 0 : i % count; }
   function normalizeCode(raw) {
     if (raw == null) return null;
     var s = '', up = String(raw).toUpperCase();
     for (var i = 0; i < up.length; i++) {
       var ch = up.charAt(i);
-      if (ch === ' ' || ch === '-') continue;
+      if (ch === ' ' || ch === '-' || ch === '\u00b7') continue;
       if (ALPHABET.indexOf(ch) < 0) return null;
       s += ch;
     }
-    return s.length === 6 ? s : null;
+    return s.length === CODE_LEN ? s : null;
   }
+  function bytes(a, b) { var r = new Uint8Array(a.length + b.length); r.set(a, 0); r.set(b, a.length); return r; }
+  /** Same derivation as Crypto.java: PBKDF2-HMAC-SHA256(code) -> SHA-256 of labelled master -> AES key, topic. */
+  var cryptoCache = {};
   function makeCrypto(code) {
-    return Promise.all([
-      crypto.subtle.digest('SHA-256', enc.encode('gonitwa-key-v1:' + code)),
-      crypto.subtle.digest('SHA-256', enc.encode('gonitwa-topic-v1:' + code))
-    ]).then(function (r) {
+    if (cryptoCache[code]) return cryptoCache[code];
+    var p = crypto.subtle.importKey('raw', enc.encode(code), 'PBKDF2', false, ['deriveBits']).then(function (pk) {
+      return crypto.subtle.deriveBits({ name: 'PBKDF2', salt: enc.encode('gonitwa-v2'), iterations: ITERATIONS, hash: 'SHA-256' }, pk, 256);
+    }).then(function (master) {
+      var m = new Uint8Array(master);
+      return Promise.all([
+        crypto.subtle.digest('SHA-256', bytes(enc.encode('gonitwa-key-v2:'), m)),
+        crypto.subtle.digest('SHA-256', bytes(enc.encode('gonitwa-topic-v2:'), m))
+      ]);
+    }).then(function (r) {
       return crypto.subtle.importKey('raw', r[0], 'AES-GCM', false, ['encrypt', 'decrypt']).then(function (key) {
         return {
           topicId: hex(r[1]).substring(0, 24),
@@ -498,9 +577,12 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
         };
       });
     });
+    cryptoCache[code] = p;
+    p.catch(function () { delete cryptoCache[code]; });
+    return p;
   }
 
-  // ------------------------------------------------------------------ MQTT 3.1.1 over WebSocket (QoS 0)
+  // ------------------------------------------------------------------ MQTT 5.0 over WebSocket (QoS 0)
   function mqttStr(s) { var b = enc.encode(s), r = new Uint8Array(b.length + 2); r[0] = b.length >> 8; r[1] = b.length & 255; r.set(b, 2); return r; }
   function packet(header, body) {
     var len = body.length, lenBytes = [];
@@ -511,8 +593,16 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
   }
   function concat(a, b) { var r = new Uint8Array(a.length + b.length); r.set(a, 0); r.set(b, a.length); return r; }
 
-  function Link(url, clientId, filter, listener) {
-    this.url = url; this.clientId = clientId; this.filter = filter; this.listener = listener;
+  function varInt(b, pos) {          // returns [value, next position]
+    var v = 0, mult = 1;
+    for (var k = 0; k < 4 && pos < b.length; k++) { var x = b[pos++]; v += (x & 0x7f) * mult; mult *= 128; if (!(x & 0x80)) break; }
+    return [v, pos];
+  }
+  var EXPIRY_PROP = new Uint8Array([5, 0x02, (EXPIRY_S >>> 24) & 255, (EXPIRY_S >>> 16) & 255, (EXPIRY_S >>> 8) & 255, EXPIRY_S & 255]);
+
+  function Link(server, clientId, filter, listener) {
+    this.url = server.ws; this.user = server.user || ''; this.pass = server.pass || '';
+    this.clientId = clientId; this.filter = filter; this.listener = listener;
     this.up = false; this.closed = false; this.dead = false; this.failures = 0;
     this.ws = null; this.buf = new Uint8Array(0); this.timer = null; this.ping = null; this.lastWrite = 0;
     this.inq = Promise.resolve();
@@ -530,7 +620,10 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     var guard = setTimeout(function () { if (!self.up && ws === self.ws) { try { ws.close(); } catch (e) { } self._down('timeout'); } }, 9000);
     ws.onopen = function () {
       opened = true;
-      var vh = concat(concat(mqttStr('MQTT'), new Uint8Array([4, 0x02, 0, 30])), mqttStr(self.clientId));
+      var flags = 0x02 | (self.user ? 0x80 : 0) | (self.pass ? 0x40 : 0);   // clean start [+ user] [+ password]
+      var vh = concat(concat(mqttStr('MQTT'), new Uint8Array([5, flags, 0, 30, 0])), mqttStr(self.clientId));
+      if (self.user) vh = concat(vh, mqttStr(self.user));
+      if (self.pass) vh = concat(vh, mqttStr(self.pass));
       ws.send(packet(0x10, vh));
     };
     ws.onmessage = function (ev) {
@@ -542,7 +635,8 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     ws.onclose = function (ev) {
       clearTimeout(guard);
       if (ws !== self.ws) return;
-      self._down(opened ? 'połączenie zamknięte (' + ev.code + ')' : 'nie można połączyć');
+      self._down(self.refused || (opened ? 'połączenie zamknięte (' + ev.code + ')' : 'nie można połączyć'));
+      self.refused = '';
     };
   };
   Link.prototype._drain = function () {
@@ -557,22 +651,28 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
       var h = b[0], body = b.subarray(i, i + len);
       this.buf = b.subarray(i + len);
       var type = h >> 4;
-      if (type === 2) {                                   // CONNACK
-        if (body.length < 2 || body[1] !== 0) { this.ws.close(); return; }
-        var sub = concat(concat(new Uint8Array([0, 1]), mqttStr(this.filter)), new Uint8Array([0]));
+      if (type === 2) {                                   // CONNACK: flags, reason, properties
+        if (body.length < 2 || body[1] !== 0) { this.refused = 'serwer odrzucił połączenie (0x' + (body[1] || 0).toString(16) + ')'; this.ws.close(); return; }
+        var sub = concat(concat(new Uint8Array([0, 1, 0]), mqttStr(this.filter)), new Uint8Array([0]));
         this.ws.send(packet(0x82, sub));
-      } else if (type === 9) {                            // SUBACK
+      } else if (type === 9) {                            // SUBACK: id, properties, reason codes
+        var sp = varInt(body, 2), rc = body[sp[1] + sp[0]];
+        if (rc === undefined || rc >= 0x80) { this.refused = 'subskrypcja odrzucona'; this.ws.close(); return; }
         this.up = true; this.failures = 0; this.lastWrite = now();
         clearInterval(this.ping);
         this.ping = setInterval(function () {
           if (self.up && now() - self.lastWrite >= 15000) { try { self.ws.send(new Uint8Array([0xC0, 0])); self.lastWrite = now(); } catch (e) { } }
         }, 5000);
         this.listener.onUp(this);
-      } else if (type === 3) {                            // PUBLISH
+      } else if (type === 3) {                            // PUBLISH: topic, [id], properties, payload
         var qos = (h >> 1) & 3, tl = (body[0] << 8) | body[1];
         var topic = dec.decode(body.subarray(2, 2 + tl));
-        var payload = body.slice(2 + tl + (qos > 0 ? 2 : 0));
+        var pp = varInt(body, 2 + tl + (qos > 0 ? 2 : 0));
+        var payload = body.slice(pp[1] + pp[0]);
         this.listener.onMessage(this, topic, payload, (h & 1) !== 0);
+      } else if (type === 14) {                           // DISCONNECT from the server
+        this.refused = 'serwer rozłączył (0x' + (body[0] || 0).toString(16) + ')';
+        this.ws.close(); return;
       }
     }
   };
@@ -590,7 +690,7 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
   Link.prototype.publish = function (topic, payload, retain) {
     if (!this.up || this.closed || !this.ws) return;
     try {
-      this.ws.send(packet(0x30 | (retain ? 1 : 0), concat(mqttStr(topic), payload || new Uint8Array(0))));
+      this.ws.send(packet(0x30 | (retain ? 1 : 0), concat(concat(mqttStr(topic), EXPIRY_PROP), payload || new Uint8Array(0))));
       this.lastWrite = now();
     } catch (e) { /* will reconnect */ }
   };
@@ -598,13 +698,16 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     this.closed = true; this.up = false; this.dead = true;
     clearTimeout(this.timer); clearInterval(this.ping);
     var ws = this.ws;
-    if (ws) { ws.onclose = ws.onmessage = null; setTimeout(function () { try { ws.close(); } catch (e) { } }, 300); }
+    if (ws) {
+      ws.onclose = ws.onmessage = null;
+      setTimeout(function () { try { ws.send(new Uint8Array([0xE0, 0])); } catch (e) { } try { ws.close(); } catch (e) { } }, 300);
+    }
   };
 
   // ------------------------------------------------------------------ settings / game records
   function defaults() {
-    return { roundSec: 1200, headSec: 120, pingSec: 180, zoneOn: false, zLat: 0, zLon: 0, zRadius: 300,
-      shrinkOn: false, shrinkSec: 300, zFinal: 100, graceSec: 30, convert: false };
+    return { roundSec: 1500, headSec: 180, pingSec: 240, zoneOn: false, zLat: 0, zLon: 0, zRadius: 400,
+      shrinkOn: false, shrinkSec: 360, zFinal: 150, graceSec: 45, convert: false };
   }
   function settingsFrom(m, base) {
     base = base || defaults();
@@ -708,6 +811,14 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     else if (c === 'kick') hostCmd(str(m, 'id', ''), { kick: true });
     else if (c === 'revive') hostCmd(str(m, 'id', ''), { revive: true });
     else if (c === 'clearError') error = '';
+    else if (c === 'consent') save('consent', String(int(m, 'v', 0)));
+    else if (c === 'wipe') wipe();
+  }
+  /** "Delete my data from this device": leaves the game and forgets name, codes, settings and consent. */
+  function wipe() {
+    leave(null);
+    ['name', 'lastCode', 'settings', 'consent', 'pid'].forEach(function (k) { save(k, null); });
+    myName = ''; lastSettings = null; error = '';
   }
   function setName(name) {
     name = (name || '').trim();
@@ -717,7 +828,7 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
   }
   function create() {
     if (mode !== NONE) return;
-    if (!myName) { fail('Najpierw wpisz swoje imię.'); return; }
+    if (!myName) { fail('Najpierw podaj swój pseudonim.'); return; }
     resetSession();
     mode = CREATING; createTry = 0; epIdx = CREATE_ORDER[0]; cycleFails = 0;
     openLink(newCode(epIdx, ENDPOINTS.length));
@@ -725,9 +836,9 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
   }
   function join(raw) {
     if (mode !== NONE) return;
-    if (!myName) { fail('Najpierw wpisz swoje imię.'); return; }
+    if (!myName) { fail('Najpierw podaj swój pseudonim.'); return; }
     var c = normalizeCode(raw);
-    if (c == null) { fail('Kod gry ma 6 znaków (litery i cyfry).'); return; }
+    if (c == null) { fail('Kod gry ma ' + CODE_LEN + ' znaków – same litery i cyfry.'); return; }
     resetSession();
     mode = JOINING; epIdx = brokerIndex(c, ENDPOINTS.length);
     openLink(c);
@@ -755,7 +866,7 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
   function chooseTeam(team) {
     if (mode !== IN) return;
     if (team !== HUNTER && team !== RUNNER && team !== '') return;
-    if (phase() !== 'lobby') { fail('Drużynę można zmienić tylko w poczekalni.'); return; }
+    if (phase() !== 'lobby') { fail('Stronę można zmienić tylko przed startem rundy.'); return; }
     me.team = team; me.orig = team; publishSelf();
   }
   function hostSettings(s) {
@@ -768,8 +879,8 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     if (mode !== IN || !isHost() || game.phase === 'running') return;
     var h = 0, r = 0;
     everyone().forEach(function (p) { if (p.team === HUNTER) h++; if (p.team === RUNNER) r++; });
-    if (h < 1 || r < 1) { fail('Potrzebny co najmniej jeden łowca i jeden uciekinier.'); return; }
-    if (game.s.zoneOn && game.s.zLat === 0 && game.s.zLon === 0) { fail('Ustaw środek strefy na mapie albo wyłącz strefę.'); return; }
+    if (h < 1 || r < 1) { fail('Do startu potrzeba co najmniej jednego tropiciela i jednego zbiega.'); return; }
+    if (game.s.zoneOn && game.s.zLat === 0 && game.s.zLon === 0) { fail('Wskaż na mapie środek terenu gry albo wyłącz teren.'); return; }
     game.round++; game.phase = 'running'; game.startAt = hostNow() + COUNTDOWN_MS;
     game.endedAt = 0; game.winner = ''; game.reason = '';
     publishGame(); onRoundChanged();
@@ -794,7 +905,7 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     if (game.s.convert) me.team = HUNTER;
     publishSelf();
     sendRaw('pg/' + myId, null, true);
-    say('tag', 'Zostałeś złapany. ' + leftText(aliveRunners()));
+    say('tag', 'Odpadasz z rundy. ' + leftText(aliveRunners()));
   }
   function sendChat(text) {
     if (mode !== IN || text == null) return;
@@ -833,8 +944,8 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     var forCode = code, idx = epIdx;
     makeCrypto(code).then(function (c) {
       if (code !== forCode || mode === NONE || mode === IN) return;      // superseded meanwhile
-      cr = c; base = 'gnt1/' + c.topicId + '/';
-      link = new Link(ENDPOINTS[idx], 'gnt' + myId + randomId(6), base + '#', listener);
+      cr = c; base = TOPIC_ROOT + c.topicId + '/';
+      link = new Link(SERVERS[idx], 'gnt' + myId + randomId(6), base + '#', listener);
       link.cr = c; link.base = base; link.outq = Promise.resolve();
       link.start();
     }, function (e) { fail('Ta przeglądarka nie obsługuje szyfrowania (wymagane HTTPS). ' + (e && e.message || '')); });
@@ -861,7 +972,7 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
   };
   function handle(sub, empty, plain, retained) {
     if (empty) {
-      if (sub === 'g') { if (mode === IN && !isHost()) leave('Gospodarz zakończył grę.'); }
+      if (sub === 'g') { if (mode === IN && !isHost()) leave('Prowadzący zamknął grę.'); }
       else if (sub.indexOf('p/') === 0) { var id = sub.substring(2); if (id !== myId) { delete players[id]; delete locs[id]; delete pingRecs[id]; } }
       else if (sub.indexOf('pg/') === 0) delete pingRecs[sub.substring(3)];
       return;
@@ -899,9 +1010,9 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     players[id] = p;
     if (mode === IN && game && phase() === 'running' && p.round === game.round && !p.alive && old && (old.alive || old.round !== p.round)) {
       delete pingRecs[id];
-      say('tag', p.name + ' złapany! ' + leftText(aliveRunners()));
+      say('tag', p.name + ' odpada! ' + leftText(aliveRunners()));
     }
-    if (mode === IN && !old && phase() === 'lobby') note(p.name + ' dołącza do gry');
+    if (mode === IN && !old && phase() === 'lobby') note('Nowy gracz: ' + p.name);
   }
   function onLoc(id, m) { if (id !== myId) locs[id] = { lat: num(m, 'lat', 0), lon: num(m, 'lon', 0), acc: num(m, 'acc', 0), t: int(m, 't', 0) }; }
   function onPingRec(id, m) {
@@ -923,10 +1034,10 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
   }
   function applyHostCmd(m) {
     if (mode !== IN) return;
-    if (bool(m, 'kick', false)) { leave('Gospodarz usunął Cię z gry.'); return; }
+    if (bool(m, 'kick', false)) { leave('Prowadzący usunął Cię z gry.'); return; }
     if (bool(m, 'revive', false) && phase() === 'running' && !me.alive) {
       me.alive = true; me.taggedAt = 0; me.team = me.orig; publishSelf();
-      say('info', 'Gospodarz przywrócił Cię do gry.');
+      say('info', 'Prowadzący przywrócił Cię do gry.');
       return;
     }
     var team = str(m, 'team', null);
@@ -971,7 +1082,7 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
       enter(); publishGame();
     } else if (!up && t - attemptAt > 9000) {
       cycleFails++;
-      if (cycleFails >= CREATE_ORDER.length) fail('Brak połączenia z serwerem gry. Sprawdź internet – próbuję dalej…');
+      if (cycleFails >= CREATE_ORDER.length) fail('Nie mogę połączyć się z serwerem gry. Sprawdź internet – ponawiam…');
       createTry = (createTry + 1) % CREATE_ORDER.length; epIdx = CREATE_ORDER[createTry];
       openLink(newCode(epIdx, ENDPOINTS.length));
     }
@@ -979,9 +1090,9 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
   function tickJoining(t) {
     var up = link && link.isUp();
     if (up && syncUntil > 0 && t >= syncUntil) {
-      if (!game) { leave('Nie znaleziono gry o kodzie ' + code + '.'); return; }
+      if (!game) { leave('Nie ma gry o kodzie ' + prettyCode(code) + '. Sprawdź, czy kod jest poprawny.'); return; }
       enter();
-    } else if (!up && t - attemptAt > 12000 && !error) fail('Brak połączenia z serwerem gry. Sprawdź internet – próbuję dalej…');
+    } else if (!up && t - attemptAt > 12000 && !error) fail('Nie mogę połączyć się z serwerem gry. Sprawdź internet – ponawiam…');
   }
   function enter() {
     mode = IN; error = '';
@@ -1005,16 +1116,16 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
       var caught = o.reason === 'caught' || o.reason === 'left';
       caughtTicks = caught ? caughtTicks + 1 : 3;
       if (isHost() && caughtTicks >= 3) { game.phase = 'ended'; game.endedAt = o.at; game.winner = o.winner; game.reason = o.reason; publishGame(); }
-      if (endAnnouncedRound !== game.round && caughtTicks >= 2) { endAnnouncedRound = game.round; say('end', 'Koniec rundy! ' + winnerText(o.winner)); }
+      if (endAnnouncedRound !== game.round && caughtTicks >= 2) { endAnnouncedRound = game.round; say('end', 'Runda skończona! ' + winnerText(o.winner)); }
       return;
     }
     caughtTicks = 0;
     var sub = subPhase(hn), key = game.round + ':' + sub;
     if (key !== announcedSub) {
       announcedSub = key;
-      if (sub === 'countdown') say('start', 'Runda startuje! ' + roleText());
-      else if (sub === 'headstart') say('start', me.team === RUNNER ? 'Uciekaj! Masz ' + dur(game.s.headSec) + ' na ukrycie się.' : 'Uciekinierzy mają ' + dur(game.s.headSec) + ' forów.');
-      else if (sub === 'hunt') say('hunt', me.team === HUNTER ? 'Koniec forów – ruszaj na łowy!' : 'Koniec forów – łowcy ruszyli!');
+      if (sub === 'countdown') say('start', 'Zaraz start! ' + roleText());
+      else if (sub === 'headstart') say('start', me.team === RUNNER ? 'Ukryj się! Tropiciele ruszą za ' + dur(game.s.headSec) + '.' : 'Zbiegowie się ukrywają – pościg za ' + dur(game.s.headSec) + '.');
+      else if (sub === 'hunt') say('hunt', me.team === HUNTER ? 'Pościg! Ruszaj tropić zbiegów.' : 'Tropiciele ruszyli w pościg!');
     }
     var participant = me.team === HUNTER || (me.team === RUNNER && me.alive);
     if (participant && myFix && t - myFixLocal < 180000 && t - lastLocPub >= 4000 && link && link.isUp()) {
@@ -1028,18 +1139,18 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
       lastPingIdx = k;
       if (me.team === RUNNER && me.alive) {
         if (myFix) send('pg/' + myId, { lat: myFix.lat, lon: myFix.lon, acc: myFix.acc, t: hn, k: k, round: game.round }, true);
-        say('ping', 'Ping! Łowcy widzą Twoją pozycję.');
+        say('ping', 'Namiar! Tropiciele dostali Twoją pozycję.');
       } else if (me.team === HUNTER) {
         everyone().forEach(function (p) {
           var f = locs[p.id];
           if (isAliveRunner(p) && f) pingSnap[p.id] = { lat: f.lat, lon: f.lon, acc: f.acc, t: hn, k: k, round: game.round };
         });
-        say('ping', 'Nowy ping – pozycje uciekinierów są na mapie.');
+        say('ping', 'Nowy namiar – pozycje zbiegów są na mapie.');
       }
     }
     if (game.s.zoneOn) {
       var si = shrinkIndex(hn);
-      if (si > lastShrinkIdx) { lastShrinkIdx = si; say('zone', 'Strefa się zmniejszyła – promień ' + Math.round(zoneRadius(hn)) + ' m.'); }
+      if (si > lastShrinkIdx) { lastShrinkIdx = si; say('zone', 'Teren gry się kurczy – promień ' + Math.round(zoneRadius(hn)) + ' m.'); }
       var radius = zoneRadius(hn), grace = game.s.graceSec * 1000;
       everyone().forEach(function (p) {
         var isMe = p === me;
@@ -1049,17 +1160,17 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
         var out = distance(f.lat, f.lon, game.s.zLat, game.s.zLon) > radius + Math.min(f.acc, 20);
         if (!out) {
           delete outsideSince[p.id]; delete exposedSeen[p.id];
-          if (isMe && meOutside) { meOutside = false; meExposed = false; say('zone', 'Znowu jesteś w strefie.'); }
+          if (isMe && meOutside) { meOutside = false; meExposed = false; say('zone', 'Znów jesteś na terenie gry.'); }
           return;
         }
         if (!(p.id in outsideSince)) outsideSince[p.id] = hn;
         var exposed = hn - outsideSince[p.id] >= grace;
         if (isMe) {
-          if (!meOutside) { meOutside = true; say('zone', 'Jesteś poza strefą! Masz ' + dur(game.s.graceSec) + ' na powrót.'); }
-          if (exposed && !meExposed) { meExposed = true; say('zone', 'Łowcy widzą Cię na żywo – wracaj do strefy!'); }
+          if (!meOutside) { meOutside = true; say('zone', 'Opuszczasz teren gry! Wróć w ciągu ' + dur(game.s.graceSec) + '.'); }
+          if (exposed && !meExposed) { meExposed = true; say('zone', 'Tropiciele widzą Cię na bieżąco – wróć na teren!'); }
         } else if (exposed && !exposedSeen[p.id]) {
           exposedSeen[p.id] = true;
-          if (me.team === HUNTER) say('zone', p.name + ' jest poza strefą – widać go na żywo!');
+          if (me.team === HUNTER) say('zone', p.name + ' poza terenem – pozycja widoczna na bieżąco!');
         }
       });
     }
@@ -1136,15 +1247,16 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
   }
 
   // ------------------------------------------------------------------ texts
-  function roleText() { return me.team === HUNTER ? 'Jesteś łowcą.' : me.team === RUNNER ? 'Jesteś uciekinierem.' : 'Oglądasz tę rundę.'; }
-  function leftText(left) { return left <= 0 ? 'Wszyscy uciekinierzy złapani.' : left === 1 ? 'Został 1 uciekinier.' : 'Zostało ' + left + ' uciekinierów.'; }
-  function winnerText(w) { return w === HUNTER ? 'Wygrywają łowcy – wszyscy złapani.' : w === RUNNER ? 'Wygrywają uciekinierzy – czas minął.' : 'Runda przerwana.'; }
+  function roleText() { return me.team === HUNTER ? 'Grasz jako tropiciel.' : me.team === RUNNER ? 'Grasz jako zbieg.' : 'Oglądasz tę rundę.'; }
+  function leftText(left) { return left <= 0 ? 'Nie został żaden zbieg.' : left === 1 ? 'Został ostatni zbieg.' : 'Zbiegów w grze: ' + left + '.'; }
+  function winnerText(w) { return w === HUNTER ? 'Wygrywają tropiciele – dopadli wszystkich.' : w === RUNNER ? 'Wygrywają zbiegowie – przetrwali do końca.' : 'Runda przerwana.'; }
   function dur(sec) { return sec < 60 ? sec + ' s' : sec % 60 === 0 ? (sec / 60) + ' min' : Math.floor(sec / 60) + ' min ' + (sec % 60) + ' s'; }
 
   // ------------------------------------------------------------------ view for the UI
   function view() {
     var v = {}, t = now();
     v.name = myName;
+    v.consent = parseInt(load('consent') || '0', 10) || 0;
     v.lastCode = load('lastCode') || '';
     if (error && t - errorAt > 12000) error = '';
     v.error = error;
@@ -1241,7 +1353,10 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
       if (navigator.share) navigator.share({ text: text }).catch(function () { });
       else if (navigator.clipboard) navigator.clipboard.writeText(text).catch(function () { });
     },
-    keepScreenOn: function (on) { wake.want = !!on; applyWake(); }
+    keepScreenOn: function (on) { wake.want = !!on; applyWake(); },
+    config: function () { var c = {}; for (var k in CFG) if (k !== 'servers') c[k] = CFG[k]; return JSON.stringify(c); },
+    appVersion: function () { return CFG.version || 'web'; },
+    openUrl: function (url) { if (/^(https?:|mailto:)/i.test(url)) window.open(url, '_blank', 'noopener'); }
   };
   // test hook: lets automated tests feed positions without a GPS
   window.__gonitwaLoc = function (lat, lon, acc) { onPos({ coords: { latitude: lat, longitude: lon, accuracy: acc || 5 } }); };
@@ -1249,13 +1364,29 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
 
 </script>
 <script>
-/* Minimal slippy map on a canvas: OpenStreetMap tiles, drag, pinch, tap. No dependencies. */
+/* Minimal slippy map on a canvas: drag, pinch, tap. No dependencies.
+ * Map data: OpenFreeMap vector tiles (OpenMapTiles schema, © OpenStreetMap contributors) drawn by the small
+ * renderer below in the app's own dark style, or any raster tile URL set in config.json ("map"). */
 (function () {
   'use strict';
   var TILE = 256;
-  var cache = {};          // "z/x/y" -> {img, ok}
-  var cacheKeys = [];
 
+  // ------------------------------------------------------------------ source configuration
+  var DEFAULT_SOURCE = {
+    type: 'vector',
+    tilejson: 'https://tiles.openfreemap.org/planet',
+    credits: [['OpenFreeMap', 'https://openfreemap.org'], ['© OpenMapTiles', 'https://www.openmaptiles.org/'],
+      ['Dane z OpenStreetMap', 'https://www.openstreetmap.org/copyright']]
+  };
+  var src = DEFAULT_SOURCE, openUrl = function (u) { window.open(u, '_blank', 'noopener'); };
+  var maps = [];
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function creditsHTML() {
+    return (src.credits || []).map(function (c) { return '<a href="' + esc(c[1]) + '" data-ext rel="noopener">' + esc(c[0]) + '</a>'; }).join(' ');
+  }
+  function everyMap(fn) { for (var i = 0; i < maps.length; i++) fn(maps[i]); }
+
+  // ------------------------------------------------------------------ projection
   function lon2x(lon, z) { return (lon + 180) / 360 * Math.pow(2, z) * TILE; }
   function lat2y(lat, z) {
     var r = lat * Math.PI / 180;
@@ -1267,6 +1398,413 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     return 180 / Math.PI * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
   }
 
+  // ------------------------------------------------------------------ protobuf + Mapbox Vector Tile decoding
+  function Pbf(b) { this.b = b; this.i = 0; }
+  Pbf.prototype.v = function () { var b = this.b, v = 0, m = 1, x; do { x = b[this.i++]; v += (x & 0x7f) * m; m *= 128; } while (x & 0x80); return v; };
+  Pbf.prototype.skip = function (wt) {
+    if (wt === 0) this.v(); else if (wt === 1) this.i += 8; else if (wt === 2) { var n = this.v(); this.i += n; } else if (wt === 5) this.i += 4;
+    else throw new Error('pbf wire type ' + wt);
+  };
+  Pbf.prototype.sub = function () { var n = this.v(), s = this.i; this.i += n; return [s, s + n]; };
+  var utf8 = typeof TextDecoder !== 'undefined' ? new TextDecoder() : null;
+  function str(b, r) { return utf8 ? utf8.decode(b.subarray(r[0], r[1])) : String.fromCharCode.apply(null, b.subarray(r[0], r[1])); }
+  function zz(n) { return n % 2 ? -(n + 1) / 2 : n / 2; }
+  function packed(p, r, out) { var save = p.i; p.i = r[0]; while (p.i < r[1]) out.push(p.v()); p.i = save; return out; }
+
+  function readValue(p, r) {
+    var save = p.i, val = null; p.i = r[0];
+    var dv = new DataView(p.b.buffer, p.b.byteOffset);
+    while (p.i < r[1]) {
+      var t = p.v(), f = t >> 3, wt = t & 7;
+      if (f === 1) val = str(p.b, p.sub());
+      else if (f === 2) { val = dv.getFloat32(p.i, true); p.i += 4; }
+      else if (f === 3) { val = dv.getFloat64(p.i, true); p.i += 8; }
+      else if (f === 4 || f === 5) val = p.v();
+      else if (f === 6) val = zz(p.v());
+      else if (f === 7) val = !!p.v();
+      else p.skip(wt);
+    }
+    p.i = save;
+    return val;
+  }
+
+  /** Decodes the layers we draw: {layerName: {extent, features: [{type, props, geom, bbox}]}} */
+  var WANT = { water: 1, waterway: 1, landcover: 1, landuse: 1, park: 1, building: 1, transportation: 1,
+    transportation_name: 1, place: 1, water_name: 1, aeroway: 1 };
+  function decodeTile(bytes) {
+    var p = new Pbf(bytes), layers = {};
+    while (p.i < bytes.length) {
+      var t = p.v();
+      if ((t >> 3) === 3 && (t & 7) === 2) { var l = decodeLayer(p, p.sub()); if (l) layers[l.name] = l; }
+      else p.skip(t & 7);
+    }
+    return layers;
+  }
+  function decodeLayer(p, r) {
+    var save = p.i; p.i = r[0];
+    var name = '', keys = [], vals = [], feats = [], extent = 4096;
+    while (p.i < r[1]) {
+      var t = p.v(), f = t >> 3, wt = t & 7;
+      if (f === 1) name = str(p.b, p.sub());
+      else if (f === 2) feats.push(p.sub());
+      else if (f === 3) keys.push(str(p.b, p.sub()));
+      else if (f === 4) vals.push(readValue(p, p.sub()));
+      else if (f === 5) extent = p.v();
+      else p.skip(wt);
+    }
+    p.i = save;
+    if (!WANT[name]) return null;
+    var out = [];
+    for (var k = 0; k < feats.length; k++) {
+      var fr = feats[k], type = 0, tags = [], cmds = [];
+      var s2 = p.i; p.i = fr[0];
+      while (p.i < fr[1]) {
+        var tt = p.v(), ff = tt >> 3;
+        if (ff === 2) packed(p, p.sub(), tags);
+        else if (ff === 3) type = p.v();
+        else if (ff === 4) packed(p, p.sub(), cmds);
+        else p.skip(tt & 7);
+      }
+      p.i = s2;
+      var props = {};
+      for (var j = 0; j + 1 < tags.length; j += 2) props[keys[tags[j]]] = vals[tags[j + 1]];
+      var g = geometry(cmds);
+      if (g.rings.length) out.push({ type: type, props: props, geom: g.rings, bbox: g.bbox });
+    }
+    return { name: name, extent: extent, features: out };
+  }
+  function geometry(cmds) {
+    var rings = [], cur = null, x = 0, y = 0, i = 0, x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    while (i < cmds.length) {
+      var c = cmds[i++], id = c & 7, n = Math.floor(c / 8);
+      if (id === 1 || id === 2) {
+        for (var k = 0; k < n && i + 1 < cmds.length; k++) {
+          x += zz(cmds[i++]); y += zz(cmds[i++]);
+          if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+          if (id === 1) { cur = [x, y]; rings.push(cur); } else if (cur) cur.push(x, y);
+        }
+      } else if (id === 7) { if (cur && cur.length >= 2) cur.push(cur[0], cur[1]); }
+      else break;
+    }
+    return { rings: rings, bbox: [x0, y0, x1, y1] };
+  }
+
+  // ------------------------------------------------------------------ style (dark, quiet, roads and paths first)
+  // Contrast is tuned for reading the map outdoors, in daylight.
+  var BG = '#1d2624';
+  var FILL = {
+    landcover: { wood: '#1f3326', forest: '#1f3326', grass: '#213527', meadow: '#213527', scrub: '#203426', farmland: '#1f2a24',
+      wetland: '#1d2f2e', sand: '#353527', beach: '#353527', ice: '#2c3838', rock: '#29302d', _: '#1f2a26' },
+    landuse: { residential: '#202a27', suburb: '#202a27', neighbourhood: '#202a27', commercial: '#252c2e', retail: '#252c2e',
+      industrial: '#242a2c', railway: '#222927', cemetery: '#203126', school: '#262e2c', university: '#262e2c', college: '#262e2c',
+      hospital: '#2a2c2e', stadium: '#213628', pitch: '#213628', playground: '#213628', track: '#213628', garages: '#222927',
+      military: '#272a28', _: null },
+    park: '#22392a', water: '#12384a', building: '#323d3a', buildingLine: '#3d4946', aeroway: '#2a3230', area: '#2b3532'
+  };
+  var ROAD = {   // colour, width at zoom 16 (CSS px), drawing rank
+    motorway: ['#d4a65a', 7, 10], trunk: ['#cba35a', 6.5, 9], primary: ['#bfa36b', 5.5, 8], secondary: ['#a3aba4', 4.8, 7],
+    tertiary: ['#929a95', 4.2, 6], minor: ['#78837f', 3.4, 5], service: ['#646f6c', 2.2, 4], raceway: ['#646f6c', 2.2, 4],
+    busway: ['#646f6c', 2.6, 4], track: ['#6b7a6e', 1.6, 3], path: ['#8a9a8e', 1.3, 2], rail: ['#55605d', 1.6, 1],
+    transit: ['#55605d', 1.3, 1], ferry: ['#2a6680', 1.2, 0], _: ['#6a7471', 2, 3]
+  };
+  var TEXT = '#dfe8e3', HALO = 'rgba(11,15,14,0.92)';
+  function roadStyle(cls) { return ROAD[String(cls || '').replace(/_construction$/, '')] || ROAD._; }
+  function nameOf(pr) { return pr['name:pl'] || pr.name || pr['name:latin'] || pr.name_int || ''; }
+
+  // ------------------------------------------------------------------ tile cache: drawn tiles + decoded vector tiles
+  var cache = {}, cacheKeys = [], CACHE_MAX = 48;   // "z/x/y" -> {img, ok}; drawn tiles, oldest dropped first
+  var vcache = {}, vkeys = [], VCACHE_MAX = 24;     // "z/x/y" (source zoom) -> {layers, ok, waiting: [cb]}
+  var tj = null, tjLoading = false, tjRetry = 0;
+  var PENDING = { ok: false };
+
+  function remember(key, t) {
+    cache[key] = t; cacheKeys.push({ k: key, t: t });
+    while (cacheKeys.length > CACHE_MAX) {
+      var e = cacheKeys.shift();
+      if (cache[e.k] !== e.t) continue;                     // replaced or dropped meanwhile
+      delete cache[e.k];
+      if (e.t.canvas && e.t.img) { e.t.img.width = e.t.img.height = 0; }   // give the bitmap memory back now
+    }
+  }
+  function evictVector() {
+    for (var i = 0; vkeys.length > VCACHE_MAX && i < vkeys.length; ) {
+      var k = vkeys[i], e = vcache[k];
+      if (!e || e.ok) { if (e) delete vcache[k]; vkeys.splice(i, 1); } else i++;   // tiles still loading stay
+    }
+  }
+
+  function loadTileJSON() {
+    if (tj || tjLoading || Date.now() < tjRetry) return;
+    tjLoading = true;
+    fetch(src.tilejson, { credentials: 'omit' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (j) {
+        if (!j || !j.tiles || !j.tiles.length) throw new Error('tilejson without tiles');
+        tj = { url: j.tiles[0], maxzoom: Math.min(15, j.maxzoom || 14), minzoom: j.minzoom || 0 };
+        everyMap(function (m) { m.dirty = true; });
+      }).catch(function () { tjRetry = Date.now() + 8000; })
+      .then(function () { tjLoading = false; });
+  }
+
+  function gunzipIfNeeded(buf) {
+    var b = new Uint8Array(buf);
+    if (b.length > 2 && b[0] === 0x1f && b[1] === 0x8b && typeof DecompressionStream !== 'undefined') {
+      return new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer().then(function (a) { return new Uint8Array(a); });
+    }
+    return Promise.resolve(b);
+  }
+
+  function vectorTile(z, x, y, cb) {
+    var key = z + '/' + x + '/' + y, e = vcache[key];
+    if (e) { if (e.ok) cb(e); else if (e.waiting) e.waiting.push(cb); return; }
+    e = vcache[key] = { ok: false, waiting: [cb] };
+    vkeys.push(key);
+    evictVector();
+    var url = tj.url.replace('{z}', z).replace('{x}', x).replace('{y}', y);
+    fetch(url, { credentials: 'omit' }).then(function (r) {
+      if (r.status === 204 || r.status === 404) return new ArrayBuffer(0);   // empty tile (sea, outside data)
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.arrayBuffer();
+    }).then(gunzipIfNeeded).then(function (bytes) {
+      e.layers = bytes.length ? decodeTile(bytes) : {};
+      e.ok = true;
+      var w = e.waiting; e.waiting = null;
+      for (var i = 0; i < w.length; i++) w[i](e);
+    }).catch(function () {
+      var w = e.waiting; delete vcache[key];
+      setTimeout(function () { for (var i = 0; i < w.length; i++) w[i](null); }, 6000);
+    });
+  }
+
+  /** Draws tile (z, x, y) of the view from the vector tile that contains it. */
+  function renderVector(canvas, z, x, y, vt, sz) {
+    var size = canvas.width, d = z - sz, n = Math.pow(2, d);
+    var ox = x - Math.floor(x / n) * n, oy = y - Math.floor(y / n) * n;
+    var ctx = canvas.getContext('2d');
+    var px = size / TILE;                                       // canvas pixels per CSS pixel
+    ctx.fillStyle = BG;
+    ctx.fillRect(0, 0, size, size);
+    var L = vt.layers;
+    function layer(name) { return L[name] || null; }
+    function frame(l) {                                        // tile units -> canvas pixels for this sub-tile
+      var s = size * n / l.extent;
+      return { s: s, tx: -ox * size, ty: -oy * size, x0: ox * l.extent / n, y0: oy * l.extent / n, w: l.extent / n };
+    }
+    function visible(f, fr, pad) {
+      var b = f.bbox, p = pad / fr.s;
+      return b[2] >= fr.x0 - p && b[0] <= fr.x0 + fr.w + p && b[3] >= fr.y0 - p && b[1] <= fr.y0 + fr.w + p;
+    }
+    function path(f, fr, close) {
+      ctx.beginPath();
+      for (var r = 0; r < f.geom.length; r++) {
+        var g = f.geom[r];
+        ctx.moveTo(g[0] * fr.s + fr.tx, g[1] * fr.s + fr.ty);
+        for (var k = 2; k < g.length; k += 2) ctx.lineTo(g[k] * fr.s + fr.tx, g[k + 1] * fr.s + fr.ty);
+        if (close) ctx.closePath();
+      }
+    }
+    function fills(name, colourOf) {
+      var l = layer(name); if (!l) return;
+      var fr = frame(l);
+      for (var i = 0; i < l.features.length; i++) {
+        var f = l.features[i];
+        if (f.type !== 3 || !visible(f, fr, 0)) continue;
+        var col = colourOf(f.props);
+        if (!col) continue;
+        path(f, fr, true);
+        ctx.fillStyle = col;
+        ctx.fill();
+      }
+    }
+    var grow = Math.pow(2, (z - 16) * 0.8);
+    fills('landcover', function (pr) { return FILL.landcover[pr.class] || FILL.landcover[pr.subclass] || FILL.landcover._; });
+    fills('landuse', function (pr) { return FILL.landuse[pr.class] || FILL.landuse._; });
+    fills('park', function () { return FILL.park; });
+    fills('aeroway', function () { return FILL.aeroway; });
+    fills('water', function () { return FILL.water; });
+
+    var ww = layer('waterway');
+    if (ww) {
+      var fw = frame(ww);
+      ctx.strokeStyle = '#1d5068'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      for (var i = 0; i < ww.features.length; i++) {
+        var f = ww.features[i];
+        if (f.type !== 2 || !visible(f, fw, 8 * px)) continue;
+        ctx.lineWidth = Math.max(0.8, (f.props.class === 'river' ? 4 : 1.6) * grow) * px;
+        path(f, fw, false); ctx.stroke();
+      }
+    }
+
+    if (z >= 15) {
+      var bl = layer('building');
+      if (bl) {
+        var fb = frame(bl);
+        ctx.fillStyle = FILL.building; ctx.strokeStyle = FILL.buildingLine; ctx.lineWidth = Math.max(0.6, 0.8 * px);
+        for (var b = 0; b < bl.features.length; b++) {
+          var fbld = bl.features[b];
+          if (fbld.type !== 3 || !visible(fbld, fb, 0)) continue;
+          path(fbld, fb, true); ctx.fill();
+          if (z >= 17) ctx.stroke();
+        }
+      }
+    }
+
+    var tr = layer('transportation');
+    if (tr) {
+      var ft = frame(tr), list = [];
+      for (var t = 0; t < tr.features.length; t++) {
+        var ftr = tr.features[t];
+        if (ftr.type !== 2 && ftr.type !== 3) continue;
+        var st = roadStyle(ftr.props.class);
+        if (z < 14 && st[2] < 5) continue;                     // small roads only when zoomed in
+        if (z < 15 && st[2] < 3) continue;
+        if (!visible(ftr, ft, st[1] * grow * px * 2 + 2)) continue;
+        list.push([(ftr.type === 3 ? -40 : st[2]) + (ftr.props.brunnel === 'tunnel' ? -20 : ftr.props.brunnel === 'bridge' ? 20 : 0), ftr, st]);
+      }
+      list.sort(function (a, c) { return a[0] - c[0]; });
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      for (var q = 0; q < list.length; q++) {
+        var fe = list[q][1], sty = list[q][2], cls = fe.props.class;
+        var w = Math.max(0.7, sty[1] * grow) * px;
+        ctx.globalAlpha = fe.props.brunnel === 'tunnel' ? 0.45 : 1;
+        if (fe.type === 3) { path(fe, ft, true); ctx.fillStyle = FILL.area; ctx.fill(); ctx.globalAlpha = 1; continue; }   // squares, platforms
+        if (fe.props.brunnel === 'bridge') { path(fe, ft, false); ctx.strokeStyle = BG; ctx.lineWidth = w + 3 * px; ctx.stroke(); }
+        path(fe, ft, false);
+        ctx.strokeStyle = sty[0]; ctx.lineWidth = w;
+        if (cls === 'path' || cls === 'track' || cls === 'rail' || cls === 'transit') ctx.setLineDash(cls === 'path' ? [2.2 * px, 2 * px] : [5 * px, 3 * px]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // ---- labels: placed once per source tile and zoom, so a name crossing a tile edge is drawn in both halves
+    var labs = labelsFor(vt, z, sz);
+    var ox0 = ox * TILE, oy0 = oy * TILE;                      // this tile's corner in the source tile, CSS px
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+    for (var li = 0; li < labs.length; li++) {
+      var lb = labs[li], bx = lb.box;
+      if (bx[2] < ox0 || bx[0] > ox0 + TILE || bx[3] < oy0 || bx[1] > oy0 + TILE) continue;
+      ctx.save();
+      ctx.translate((lb.x - ox0) * px, (lb.y - oy0) * px);
+      if (lb.ang) ctx.rotate(lb.ang);
+      ctx.font = lb.font.replace('%', String(Math.round(lb.fs * px)));
+      ctx.lineWidth = 3 * px; ctx.strokeStyle = HALO; ctx.strokeText(lb.text, 0, 0);
+      ctx.fillStyle = lb.col; ctx.fillText(lb.text, 0, 0);
+      ctx.restore();
+    }
+  }
+
+  var measureCtx = null;
+  function textWidth(font, fs, text) {
+    if (!measureCtx) measureCtx = document.createElement('canvas').getContext('2d');
+    measureCtx.font = font.replace('%', String(fs));
+    return measureCtx.measureText(text).width;
+  }
+
+  /** Label positions for a source tile drawn at zoom z, in CSS px of the whole source tile (cached). */
+  function labelsFor(vt, z, sz) {
+    vt.labels = vt.labels || {};
+    if (vt.labels[z]) return vt.labels[z];
+    var L = vt.layers, out = [], boxes = [], full = TILE * Math.pow(2, z - sz), edge = 3;
+    function free(bx) {
+      if (bx[0] < edge || bx[1] < edge || bx[2] > full - edge || bx[3] > full - edge) return false;
+      for (var i = 0; i < boxes.length; i++) { var o = boxes[i]; if (bx[0] < o[2] && bx[2] > o[0] && bx[1] < o[3] && bx[3] > o[1]) return false; }
+      return true;
+    }
+    function points(name, sizeOf, col) {
+      var l = L[name]; if (!l) return;
+      var s = full / l.extent;
+      for (var i = 0; i < l.features.length; i++) {
+        var f = l.features[i], text = nameOf(f.props);
+        if (!text || f.type !== 1) continue;
+        var fs = sizeOf(f.props); if (!fs) continue;
+        var font = '600 %px Roboto, system-ui, sans-serif';
+        var x = f.geom[0][0] * s, y = f.geom[0][1] * s, hw = textWidth(font, fs, text) / 2 + 3;
+        var box = [x - hw, y - fs / 2 - 2, x + hw, y + fs / 2 + 2];
+        if (!free(box)) continue;
+        boxes.push(box);
+        out.push({ text: text, x: x, y: y, ang: 0, fs: fs, font: font, col: col, box: box });
+      }
+    }
+    // places first: they matter most for finding your way
+    points('place', function (pr) {
+      var c = pr.class;
+      if (c === 'city') return z <= 15 ? 15 : 0;
+      if (c === 'town') return z <= 16 ? 14 : 0;
+      if (c === 'village' || c === 'suburb') return z <= 17 ? 13 : 0;
+      if (c === 'quarter' || c === 'neighbourhood' || c === 'hamlet' || c === 'isolated_dwelling') return z >= 14 ? 11.5 : 0;
+      return 0;
+    }, '#e3ebe6');
+    var names = L.transportation_name;
+    if (names && z >= 15) {
+      var s = full / names.extent, fs = z >= 17 ? 12 : 11, font = '500 %px Roboto, system-ui, sans-serif', lastAt = {};
+      var feats = names.features.slice().sort(function (a, b) { return roadStyle(b.props.class)[2] - roadStyle(a.props.class)[2]; });
+      for (var a = 0; a < feats.length; a++) {
+        var fl = feats[a], text = nameOf(fl.props);
+        if (!text || fl.type !== 2) continue;
+        var tw = textWidth(font, fs, text) + 8;
+        for (var r = 0; r < fl.geom.length; r++) {
+          var g = fl.geom[r];
+          for (var k = 0; k + 3 < g.length; k += 2) {
+            var x1 = g[k] * s, y1 = g[k + 1] * s, x2 = g[k + 2] * s, y2 = g[k + 3] * s;
+            var len = Math.hypot(x2 - x1, y2 - y1);
+            if (len < tw) continue;
+            var ang = Math.atan2(y2 - y1, x2 - x1);
+            if (ang > Math.PI / 2) ang -= Math.PI; if (ang < -Math.PI / 2) ang += Math.PI;
+            var hw = Math.abs(Math.cos(ang)) * tw / 2 + Math.abs(Math.sin(ang)) * fs / 2, hh = Math.abs(Math.sin(ang)) * tw / 2 + Math.abs(Math.cos(ang)) * fs / 2;
+            var slots = Math.max(1, Math.floor(len / 320));          // long straight streets get a name every ~320 px
+            for (var sl = 0; sl < slots; sl++) {
+              var tpos = (sl + 0.5) / slots, mx = x1 + (x2 - x1) * tpos, my = y1 + (y2 - y1) * tpos;
+              if ((tpos * len) < tw / 2 || ((1 - tpos) * len) < tw / 2) continue;
+              var prev = lastAt[text], near = false;
+              if (prev) for (var q = 0; q < prev.length; q++) if (Math.hypot(prev[q][0] - mx, prev[q][1] - my) < 220) near = true;
+              if (near) continue;
+              var box = [mx - hw, my - hh, mx + hw, my + hh];
+              if (!free(box)) continue;
+              boxes.push(box);
+              (lastAt[text] = lastAt[text] || []).push([mx, my]);
+              out.push({ text: text, x: mx, y: my, ang: ang, fs: fs, font: font, col: TEXT, box: box });
+            }
+          }
+        }
+      }
+    }
+    points('water_name', function () { return z >= 13 ? 11 : 0; }, '#6fa3b8');
+    vt.labels[z] = out;
+    return out;
+  }
+
+  function vectorDrawn(z, x, y, owner) {
+    var key = z + '/' + x + '/' + y, t = cache[key];
+    if (t) return t;
+    if (!tj) { loadTileJSON(); return PENDING; }
+    t = { img: null, ok: false, canvas: true };
+    remember(key, t);
+    var sz = Math.max(tj.minzoom, Math.min(z, tj.maxzoom)), d = z - sz;
+    vectorTile(sz, x >> d, y >> d, function (vt) {
+      if (cache[key] !== t) return;
+      if (!vt) { delete cache[key]; owner.dirty = true; return; }
+      var c = document.createElement('canvas');
+      c.width = c.height = Math.min(512, Math.round(TILE * Math.min(2, window.devicePixelRatio || 1)));
+      try { renderVector(c, z, x, y, vt, sz); t.img = c; t.ok = true; } catch (e) { t.failed = true; }
+      everyMap(function (m) { m.dirty = true; });
+    });
+    return t;
+  }
+
+  function rasterTile(z, x, y, owner) {
+    var key = z + '/' + x + '/' + y, t = cache[key];
+    if (t) return t;
+    t = { img: new Image(), ok: false };
+    remember(key, t);
+    t.img.crossOrigin = 'anonymous';
+    t.img.onload = function () { t.ok = true; owner.dirty = true; };
+    t.img.onerror = function () { setTimeout(function () { if (cache[key] === t) { delete cache[key]; owner.dirty = true; } }, 8000); };
+    t.img.src = src.url.replace('{z}', z).replace('{x}', x).replace('{y}', y).replace('{r}', (window.devicePixelRatio || 1) > 1.5 ? '@2x' : '');
+    return t;
+  }
+
+  // ------------------------------------------------------------------ the map widget
   function TileMap(canvas, opts) {
     this.c = canvas;
     this.ctx = canvas.getContext('2d');
@@ -1278,12 +1816,46 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     this.dirty = true;
     this._ptrs = {};
     this._bind();
+    maps.push(this);
+    var box = canvas.parentNode;
+    if (box) {
+      var a = document.createElement('div');
+      a.className = 'attrib';
+      a.innerHTML = creditsHTML();
+      a.addEventListener('click', function (e) {
+        var l = e.target.closest ? e.target.closest('a') : null;
+        if (l) { e.preventDefault(); e.stopPropagation(); openUrl(l.href); }
+      });
+      box.appendChild(a);
+      this.attrib = a;
+    }
     var self = this;
     (function loop() {
       if (self.dirty && self.c.offsetParent !== null) { self.dirty = false; self._render(); }
       self._raf = requestAnimationFrame(loop);
     })();
   }
+
+  /** cfg: config.json "map" ({type: 'vector', tilejson, credits} or {type: 'raster', url, maxZoom, credits}). */
+  TileMap.configure = function (cfg, open) {
+    if (open) openUrl = open;
+    if (cfg && (cfg.type === 'raster' ? cfg.url : true)) {
+      src = {
+        type: cfg.type === 'raster' ? 'raster' : 'vector',
+        tilejson: cfg.tilejson || DEFAULT_SOURCE.tilejson,
+        url: cfg.url || '', maxZoom: cfg.maxZoom || 19,
+        credits: cfg.credits && cfg.credits.length ? cfg.credits : DEFAULT_SOURCE.credits
+      };
+    }
+    tj = null; cache = {}; cacheKeys = []; vcache = {}; vkeys = [];
+    everyMap(function (m) { if (m.attrib) m.attrib.innerHTML = creditsHTML(); m.dirty = true; });
+  };
+  TileMap.attributionHTML = function () {
+    return 'Mapa: ' + creditsHTML() + '. Dane mapy © współtwórcy OpenStreetMap, udostępniane na licencji ' +
+      '<a href="https://opendatacommons.org/licenses/odbl/" data-ext rel="noopener">ODbL</a>.';
+  };
+  TileMap._decode = decodeTile;     // for tests
+  TileMap._render = renderVector;
 
   TileMap.prototype.setView = function (lat, lon, zoom) {
     if (isFinite(lat) && isFinite(lon)) { this.lat = Math.max(-85, Math.min(85, lat)); this.lon = lon; }
@@ -1332,22 +1904,24 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
       c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
     }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.fillStyle = '#16201c';
+    ctx.fillStyle = src.type === 'vector' ? BG : '#16201c';
     ctx.fillRect(0, 0, w, h);
 
-    var zi = Math.max(3, Math.min(19, Math.round(this.zoom)));
+    var maxZ = src.type === 'raster' ? src.maxZoom : 19;
+    var zi = Math.max(3, Math.min(maxZ, Math.round(this.zoom)));
     var scale = Math.pow(2, this.zoom - zi);
     var cx = lon2x(this.lon, zi), cy = lat2y(this.lat, zi);
     var n = Math.pow(2, zi);
     var x0 = Math.floor((cx - w / 2 / scale) / TILE), x1 = Math.floor((cx + w / 2 / scale) / TILE);
     var y0 = Math.floor((cy - h / 2 / scale) / TILE), y1 = Math.floor((cy + h / 2 / scale) / TILE);
-    var self = this;
+    ctx.imageSmoothingEnabled = true;
     for (var ty = y0; ty <= y1; ty++) {
       for (var tx = x0; tx <= x1; tx++) {
         var px = (tx * TILE - cx) * scale + w / 2, py = (ty * TILE - cy) * scale + h / 2;
         var size = TILE * scale;
         if (ty < 0 || ty >= n) continue;
-        var t = this._tile(zi, ((tx % n) + n) % n, ty);
+        var wx = ((tx % n) + n) % n;
+        var t = src.type === 'raster' ? rasterTile(zi, wx, ty, this) : vectorDrawn(zi, wx, ty, this);
         if (t.ok) {
           ctx.drawImage(t.img, px, py, size + 0.5, size + 0.5);
         } else {
@@ -1358,31 +1932,6 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     }
     if (this.opts.dim) { ctx.fillStyle = 'rgba(8,14,12,' + this.opts.dim + ')'; ctx.fillRect(0, 0, w, h); }
     if (this.draw) this.draw(ctx, this);
-    ctx.font = '10px sans-serif';
-    ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
-    ctx.fillStyle = 'rgba(0,0,0,0.55)';
-    var label = '© OpenStreetMap';
-    ctx.fillRect(w - ctx.measureText(label).width - 8, h - 15, ctx.measureText(label).width + 8, 15);
-    ctx.fillStyle = '#fff';
-    ctx.fillText(label, w - 4, h - 2);
-    void self;
-  };
-
-  TileMap.prototype._tile = function (z, x, y) {
-    var key = z + '/' + x + '/' + y;
-    var t = cache[key];
-    if (t) return t;
-    t = cache[key] = { img: new Image(), ok: false };
-    cacheKeys.push(key);
-    if (cacheKeys.length > 400) { delete cache[cacheKeys.shift()]; }
-    var self = this;
-    t.img.onload = function () { t.ok = true; self.dirty = true; };
-    t.img.onerror = function () {
-      // retry later: forget the tile so the next render asks again
-      setTimeout(function () { if (cache[key] === t) { delete cache[key]; self.dirty = true; } }, 8000);
-    };
-    t.img.src = 'https://tile.openstreetmap.org/' + key + '.png';
-    return t;
   };
 
   TileMap.prototype._bind = function () {
@@ -1467,15 +2016,26 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     perms: function () { return JSON.parse(N.permState()); },
     requestPerms: function () { N.requestPerms(); },
     share: function (t) { N.share(t); },
-    keepScreen: function (on) { N.keepScreenOn(!!on); }
+    keepScreen: function (on) { N.keepScreenOn(!!on); },
+    config: function () { try { return JSON.parse(N.config ? N.config() : '{}') || {}; } catch (e) { return {}; } },
+    openUrl: function (u) { if (N.openUrl) N.openUrl(u); else window.open(u, '_blank', 'noopener'); },
+    version: function () { try { return N.appVersion ? N.appVersion() : ''; } catch (e) { return ''; } }
   } : {
     state: function () { return fetch('/api/' + sid + '/state').then(function (r) { return r.json(); }); },
     cmd: function (o) { return fetch('/api/' + sid + '/cmd', { method: 'POST', body: JSON.stringify(o) }); },
     perms: function () { return { location: true, notif: true, gps: true }; },
     requestPerms: function () {},
     share: function (t) { window.__shared = t; },
-    keepScreen: function () {}
+    keepScreen: function () {},
+    config: function () { return window.GONITWA_CONFIG || {}; },
+    openUrl: function (u) { window.__opened = u; },
+    version: function () { return 'test'; }
   };
+  var CFG = bridge.config();
+  var WEB = !!(N && N.web);
+  var CONSENT_V = 1;                 // bump when the rules or the privacy policy change in a way users must accept again
+  if (window.TileMap && TileMap.configure) TileMap.configure(CFG.map || null, bridge.openUrl);
+  function pretty(c) { return c && c.length === 8 ? c.substring(0, 4) + ' ' + c.substring(4) : (c || ''); }
 
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -1516,6 +2076,7 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
   setInterval(poll1, 400);
 
   function render(v) {
+    if (v.screen === 'home' && (v.consent || 0) < CONSENT_V) v.screen = 'welcome';
     if (v.screen !== screen) {
       var prev = screen;
       screen = v.screen;
@@ -1526,7 +2087,8 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
       bridge.keepScreen(screen === 'game');
       onEnter(screen, prev, v);
     }
-    if (screen === 'home') renderHome(v);
+    if (screen === 'welcome') renderWelcome(v);
+    else if (screen === 'home') renderHome(v);
     else if (screen === 'connecting') renderConnecting(v);
     else if (screen === 'lobby') renderLobby(v);
     else if (screen === 'game') renderGame(v);
@@ -1548,10 +2110,20 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
   }
 
   // ------------------------------------------------------------------ home
-  // Address of the browser version (iPhone), hosted on GitHub Pages.
-  var WEB_URL = 'https://jestewole-ops.github.io/gonitwa/';
-  var linkCode = (function () {   // a shared link like ...?kod=ABC234 pre-fills the join field
-    try { return (new URLSearchParams(location.search).get('kod') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6); } catch (e) { return ''; }
+  // ------------------------------------------------------------------ first run
+  function syncConsent() { $('c-ok').disabled = !($('c-age').checked && $('c-terms').checked); }
+  $('c-age').addEventListener('change', syncConsent);
+  $('c-terms').addEventListener('change', syncConsent);
+  $('c-ok').addEventListener('click', function () {
+    if ($('c-ok').disabled) return;
+    cmd({ cmd: 'consent', v: CONSENT_V });
+  });
+  function renderWelcome() { syncConsent(); }
+
+  // Address of the browser version (iPhone and any browser).
+  var WEB_URL = CFG.webUrl || 'https://jestewole-ops.github.io/gonitwa/';
+  var linkCode = (function () {   // a shared link like ...?kod=ABCD2345 pre-fills the join field
+    try { return (new URLSearchParams(location.search).get('kod') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8); } catch (e) { return ''; }
   })();
   var nameTimer = null, codePrefilled = false;
   $('name').addEventListener('input', function () {
@@ -1559,10 +2131,14 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     var val = $('name').value;
     nameTimer = setTimeout(function () { nameTimer = null; bridge.cmd({ cmd: 'setName', name: val }); }, 250);
   });
+  /** Location is asked for only from the disclosure card, so the player always reads it first. */
   function ensurePerms() {
     var p = bridge.perms();
     if (p.location && p.gps) return true;
-    bridge.requestPerms();
+    var c = $('perm-card');
+    c.hidden = false;
+    c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash');
+    if (c.scrollIntoView) c.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return false;
   }
   function flushName() {
@@ -1584,17 +2160,24 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
   function renderHome(v) {
     var nameEl = $('name');
     if (document.activeElement !== nameEl && nameTimer === null && nameEl.value !== v.name) nameEl.value = v.name;
-    if (!codePrefilled && (linkCode || v.lastCode)) { codePrefilled = true; if (!$('code').value) $('code').value = linkCode || v.lastCode; }
+    if (!codePrefilled && (linkCode || v.lastCode)) { codePrefilled = true; if (!$('code').value) $('code').value = pretty(linkCode || v.lastCode); }
     var p = bridge.perms();
     hide('perm-card', p.location && p.gps);
-    setText('perm-text', p.secure === false
-      ? 'Ta strona musi być otwarta przez HTTPS – inaczej przeglądarka nie udostępni lokalizacji.'
-      : p.denied ? 'Dostęp do lokalizacji jest zablokowany dla tej strony. Odblokuj go w ustawieniach przeglądarki i odśwież stronę.'
-      : !p.location ? (N && N.web ? 'Gra pokazuje graczy na mapie, więc wymaga dostępu do lokalizacji.'
-        : 'Gra pokazuje graczy na mapie, więc wymaga dostępu do lokalizacji (dokładnej) i powiadomień.')
-      : 'Lokalizacja w telefonie jest wyłączona. Włącz ją, żeby zagrać.');
-    hide('web-note', !(N && N.web));
-    setText('perm-btn', !p.location ? 'Zezwól' : 'Włącz lokalizację');
+    var disclosure = '<p>Gonitwa korzysta z <b>dokładnej lokalizacji</b> telefonu tylko wtedy, gdy jesteś w grze' +
+      (WEB ? ' i ta karta jest otwarta.' : ' – także przy wygaszonym ekranie; widać wtedy stałe powiadomienie „Gonitwa”.') + '</p>' +
+      '<ul><li>Twoja pozycja trafia wyłącznie do uczestników tej samej gry: drużyna widzi ją na bieżąco, przeciwnicy – tylko w chwili namiaru albo gdy za długo jesteś poza terenem gry.</li>' +
+      '<li>Wszystko jest szyfrowane kodem gry. Serwer przekazuje dane, ale nie może ich odczytać, a po 24 godzinach je usuwa.</li>' +
+      '<li>Poza grą lokalizacja nie jest używana ani zapisywana.</li></ul>' +
+      (WEB ? '' : '<p>Poprosimy też o zgodę na powiadomienia, żeby alarmy z gry docierały przy zablokowanym ekranie.</p>');
+    var permHtml = p.secure === false
+      ? '<p>Ta strona musi być otwarta przez HTTPS – inaczej przeglądarka nie udostępni lokalizacji.</p>'
+      : p.denied ? '<p>Dostęp do lokalizacji jest zablokowany dla tej strony. Odblokuj go w ustawieniach przeglądarki i odśwież stronę.</p>'
+      : !p.location ? disclosure
+      : '<p>Usługi lokalizacji w telefonie są wyłączone. Włącz je, żeby zagrać.</p>';
+    setHTML('perm-text', permHtml);
+    hide('web-note', !WEB);
+    setText('perm-btn', !p.location ? 'Zgadzam się – dalej' : 'Włącz lokalizację');
+    hide('perm-btn', p.secure === false || !!p.denied);
     hide('home-error', !v.error);
     setText('home-error', v.error || '');
   }
@@ -1602,20 +2185,21 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
   // ------------------------------------------------------------------ connecting
   $('conn-cancel').addEventListener('click', function () { cmd({ cmd: 'leave' }); });
   function renderConnecting(v) {
-    setText('conn-title', v.creating ? 'Tworzę grę…' : 'Dołączam do gry');
-    setText('conn-sub', (v.creating ? 'Szukam wolnego serwera' : 'Kod ' + v.code) + (v.detail ? '\n' + v.detail : ''));
+    setText('conn-title', v.creating ? 'Zakładam grę…' : 'Dołączam do gry…');
+    setText('conn-sub', (v.creating ? 'Łączę z serwerem gry' : 'Kod ' + pretty(v.code)) + (v.detail ? '\n' + v.detail : ''));
     hide('conn-error', !v.error);
     setText('conn-error', v.error || '');
   }
 
   // ------------------------------------------------------------------ lobby
   var OPT = {
-    round: [1, 2, 5, 10, 15, 20, 30, 45, 60, 90, 120].map(function (m) { return [m * 60, m + ' min']; }),
-    head: [0, 15, 30, 60, 90, 120, 180, 300, 600].map(function (s) { return [s, s === 0 ? 'brak' : durText(s)]; }),
-    ping: [0, 30, 60, 120, 180, 300, 600].map(function (s) { return [s, s === 0 ? 'wyłączony' : 'co ' + durText(s)]; }),
-    grace: [5, 10, 20, 30, 60, 120].map(function (s) { return [s, durText(s)]; }),
-    shrinksec: [30, 60, 120, 180, 300, 600].map(function (s) { return [s, durText(s)]; })
+    round: [5, 10, 15, 20, 25, 30, 40, 50, 60, 90, 120].map(function (m) { return [m * 60, m + ' min']; }),
+    head: [0, 30, 60, 120, 180, 240, 300, 420, 600].map(function (s) { return [s, s === 0 ? 'bez ukrywania' : durText(s)]; }),
+    ping: [0, 60, 120, 180, 240, 300, 420, 600].map(function (s) { return [s, s === 0 ? 'bez namiarów' : 'co ' + durText(s)]; }),
+    grace: [10, 20, 30, 45, 60, 90, 120].map(function (s) { return [s, durText(s)]; }),
+    shrinksec: [60, 120, 180, 240, 360, 480, 600].map(function (s) { return [s, durText(s)]; })
   };
+  var MODE_NOTE = ['Dopadnięty zbieg kończy rundę jako widz.', 'Dopadnięty zbieg przechodzi do tropicieli i dalej poluje.'];
   function fillSelect(id, opts) {
     $(id).innerHTML = opts.map(function (o) { return '<option value="' + o[0] + '">' + o[1] + '</option>'; }).join('');
   }
@@ -1635,7 +2219,7 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     var radius = Number($('set-radius').value);
     var s = {
       roundSec: Number($('set-round').value), headSec: Number($('set-head').value), pingSec: Number($('set-ping').value),
-      convert: $('set-convert').checked, zoneOn: $('set-zone').checked, zRadius: radius,
+      convert: $('set-mode').value === '1', zoneOn: $('set-zone').checked, zRadius: radius,
       graceSec: Number($('set-grace').value), shrinkOn: $('set-shrink').checked,
       shrinkSec: Number($('set-shrinksec').value), zFinal: Math.min(radius, Number($('set-final').value))
     };
@@ -1655,8 +2239,9 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     setText('lbl-final', Math.min(Number($('set-final').value), Number($('set-radius').value)) + ' m');
     hide('zone-opts', !$('set-zone').checked);
     hide('shrink-opts', !$('set-shrink').checked);
+    setText('mode-note', MODE_NOTE[$('set-mode').value === '1' ? 1 : 0]);
   }
-  ['set-round', 'set-head', 'set-ping', 'set-convert', 'set-zone', 'set-grace', 'set-shrink', 'set-shrinksec'].forEach(function (id) {
+  ['set-mode', 'set-round', 'set-head', 'set-ping', 'set-zone', 'set-grace', 'set-shrink', 'set-shrinksec'].forEach(function (id) {
     $(id).addEventListener('change', pushSettings);
   });
   ['set-radius', 'set-final'].forEach(function (id) {
@@ -1673,8 +2258,8 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
   }
   $('share').addEventListener('click', function () {
     if (!V) return;
-    var t = 'Zagraj ze mną w Gonitwę! Kod gry: ' + V.code;
-    if (WEB_URL.indexOf('GITHUB_LOGIN') < 0) t += '\niPhone lub przeglądarka: ' + WEB_URL + '?kod=' + V.code;
+    var t = 'Gramy w Gonitwę – dołącz! Kod gry: ' + pretty(V.code) +
+      '\nBez aplikacji (iPhone, przeglądarka): ' + WEB_URL + '?kod=' + V.code;
     bridge.share(t);
   });
   $('lobby-leave').addEventListener('click', function (e) { confirmTap(e.currentTarget, 'Na pewno?', function () { cmd({ cmd: 'leave' }); }); });
@@ -1699,7 +2284,7 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
 
   function chip(p) {
     return '<span class="chip' + (p.me ? ' me' : '') + (p.online ? '' : ' off') + '" data-id="' + esc(p.id) + '">' +
-      esc(p.name) + (p.host ? ' <i>★</i>' : '') + (p.me ? ' <i>ty</i>' : '') + '</span>';
+      esc(p.name) + (p.host ? ' <i title="prowadzący">★</i>' : '') + (p.me ? ' <i>ty</i>' : '') + '</span>';
   }
   function chipsFor(v, team) {
     var l = v.players.filter(function (p) { return p.team === team; });
@@ -1743,7 +2328,7 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
 
   function renderLobby(v) {
     var s = v.game.s, host = v.me.host;
-    setText('lobby-code', v.code);
+    setText('lobby-code', pretty(v.code));
     hide('lobby-offline', v.conn === 'online');
     hide('lobby-error', !v.error);
     setText('lobby-error', v.error || '');
@@ -1757,7 +2342,7 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     for (var i = 0; i < teamBtns.length; i++) {
       var mine = teamBtns[i].getAttribute('data-team') === v.me.team;
       teamBtns[i].classList.toggle('mine', mine);
-      var label = mine ? 'Jesteś tutaj' : 'Dołącz';
+      var label = mine ? 'Twoja strona' : 'Wybieram';
       if (teamBtns[i].textContent !== label) teamBtns[i].textContent = label;
     }
 
@@ -1768,19 +2353,19 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
         settingsSynced = true;
         setSelect('set-round', s.roundSec); setSelect('set-head', s.headSec); setSelect('set-ping', s.pingSec);
         setSelect('set-grace', s.graceSec); setSelect('set-shrinksec', s.shrinkSec);
-        $('set-convert').checked = s.convert; $('set-zone').checked = s.zoneOn; $('set-shrink').checked = s.shrinkOn;
+        $('set-mode').value = s.convert ? '1' : '0'; $('set-zone').checked = s.zoneOn; $('set-shrink').checked = s.shrinkOn;
         $('set-radius').value = s.zRadius; $('set-final').max = s.zRadius; $('set-final').value = s.zFinal;
         updateSettingLabels();
       }
     } else {
       var rows = [
-        ['Czas polowania', durText(s.roundSec)],
-        ['Fory dla uciekinierów', s.headSec ? durText(s.headSec) : 'brak'],
-        ['Ping pozycji', s.pingSec ? 'co ' + durText(s.pingSec) : 'wyłączony'],
-        ['Złapani dołączają do łowców', s.convert ? 'tak' : 'nie'],
-        ['Strefa gry', s.zoneOn ? 'promień ' + s.zRadius + ' m' + (s.shrinkOn ? ', kurczy się do ' + s.zFinal + ' m' : '') : 'bez strefy']
+        ['Tryb gry', s.convert ? 'Przemiana' : 'Do ostatniego'],
+        ['Długość rundy', durText(s.roundSec)],
+        ['Czas na ukrycie', s.headSec ? durText(s.headSec) : 'bez ukrywania'],
+        ['Namiar na zbiegów', s.pingSec ? 'co ' + durText(s.pingSec) : 'bez namiarów'],
+        ['Teren gry', s.zoneOn ? 'promień ' + s.zRadius + ' m' + (s.shrinkOn ? ', kurczy się do ' + s.zFinal + ' m' : '') : 'bez granic']
       ];
-      if (s.zoneOn) rows.push(['Czas na powrót do strefy', durText(s.graceSec)]);
+      if (s.zoneOn) rows.push(['Czas na powrót na teren', durText(s.graceSec)]);
       setHTML('settings-guest', rows.map(function (r) { return '<div class="row"><span>' + r[0] + '</span><b>' + r[1] + '</b></div>'; }).join(''));
     }
 
@@ -1795,7 +2380,7 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
         if (hasCentre) zoneMap.fitCircle(s.zLat, s.zLon, s.zRadius);
         else if (v.me.lat != null) zoneMap.setView(v.me.lat, v.me.lon, 16);
       }
-      setText('zone-hint', host ? (hasCentre ? 'Dotknij mapy, aby przenieść środek strefy' : 'Dotknij mapy, aby ustawić środek strefy') : 'Strefa gry');
+      setText('zone-hint', host ? (hasCentre ? 'Dotknij mapy, aby przesunąć środek terenu' : 'Dotknij mapy, aby wskazać środek terenu') : 'Teren gry');
       hide('zone-here', !(host && v.me.lat != null));
       zoneMap.invalidate();
     }
@@ -1803,7 +2388,7 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     if (setHTML('lobby-chat', chatHTML(v.chat, 'Jeszcze nikt nic nie napisał.'))) $('lobby-chat').scrollTop = 1e6;
     hide('start', !host);
     hide('wait-host', host);
-    setText('wait-host', 'Czekamy, aż ' + v.game.hostName + ' wystartuje rundę.');
+    setText('wait-host', 'Rundę uruchamia prowadzący: ' + v.game.hostName + '.');
   }
 
   // host: tap a player chip -> actions
@@ -1818,10 +2403,10 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     setText('player-name', p.name);
     var html = '';
     if (screen === 'lobby') {
-      html += '<button class="btn" data-act="assign" data-team="H">Przenieś do łowców</button>';
-      html += '<button class="btn" data-act="assign" data-team="R">Przenieś do uciekinierów</button>';
+      html += '<button class="btn" data-act="assign" data-team="H">Przenieś do tropicieli</button>';
+      html += '<button class="btn" data-act="assign" data-team="R">Przenieś do zbiegów</button>';
     }
-    if (screen === 'game' && p.orig === 'R' && !p.alive) html += '<button class="btn" data-act="revive">Przywróć do gry (pomyłka)</button>';
+    if (screen === 'game' && p.orig === 'R' && !p.alive) html += '<button class="btn" data-act="revive">Przywróć do gry (to była pomyłka)</button>';
     html += '<button class="btn danger" data-act="kick">Usuń z gry</button>';
     $('player-actions').innerHTML = html;
     $('player-actions').onclick = function (e) {
@@ -1911,14 +2496,14 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
       ctx.fillStyle = 'rgba(53,224,194,0.18)'; ctx.fill();
       ctx.lineWidth = 3; ctx.strokeStyle = col; ctx.setLineDash([5, 4]); ctx.stroke(); ctx.setLineDash([]);
       ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2); ctx.fillStyle = col; ctx.fill();
-      label(ctx, p.x, p.y + 20, k.name, 'ping ' + ago(k.age));
+      label(ctx, p.x, p.y + 20, k.name, 'namiar ' + ago(k.age));
     } else if (k.kind === 'live') {
       var pulse = 14 + 8 * Math.abs(Math.sin(Date.now() / 300));
       ctx.beginPath(); ctx.arc(p.x, p.y, pulse, 0, Math.PI * 2);
       ctx.fillStyle = 'rgba(255,59,92,0.3)'; ctx.fill();
       ctx.beginPath(); ctx.arc(p.x, p.y, 8, 0, Math.PI * 2); ctx.fillStyle = '#ff3b5c'; ctx.fill();
       ctx.lineWidth = 2; ctx.strokeStyle = '#fff'; ctx.stroke();
-      label(ctx, p.x, p.y + 20, k.name, 'NA ŻYWO · poza strefą');
+      label(ctx, p.x, p.y + 20, k.name, 'NA BIEŻĄCO · poza terenem');
     } else {
       ctx.beginPath(); ctx.arc(p.x, p.y, 8, 0, Math.PI * 2); ctx.fillStyle = col; ctx.fill();
       ctx.lineWidth = 2; ctx.strokeStyle = '#0b0f0e'; ctx.stroke();
@@ -1987,18 +2572,18 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
   $('game-leave').addEventListener('click', function (e) { confirmTap(e.currentTarget, 'Na pewno wyjść?', function () { cmd({ cmd: 'leave' }); }); });
 
   var QUICK = {
-    H: ['Widzę go!', 'Idę od północy', 'Idę od południa', 'Obstawcie wyjście', 'Zgubiłem trop'],
-    R: ['Łowca blisko mnie!', 'U mnie czysto', 'Zmieniam kryjówkę', 'Uwaga, idą do was'],
+    H: ['Mam kogoś na oku!', 'Zachodzę od północy', 'Zachodzę od południa', 'Pilnujcie wyjść', 'Trop się urwał', 'Potrzebne wsparcie'],
+    R: ['Tropiciel blisko!', 'U mnie spokój', 'Zmieniam kryjówkę', 'Idą w waszą stronę'],
     '': ['Powodzenia!']
   };
 
   function rosterHTML(v) {
     return v.players.map(function (p) {
       var tag, cls = '';
-      if (p.orig === 'H') tag = 'łowca';
+      if (p.orig === 'H') tag = 'tropiciel';
       else if (p.orig === 'R') {
         if (p.alive) { tag = 'w grze'; cls = 'ok'; }
-        else { tag = 'złapany' + (p.survived != null ? ' po ' + clock(p.survived * 1000) : ''); cls = 'bad'; }
+        else { tag = 'odpada' + (p.survived != null ? ' po ' + clock(p.survived * 1000) : ''); cls = 'bad'; }
       } else tag = 'widz';
       if (!p.online) tag += ' · offline';
       return '<div class="trow' + (p.online ? '' : ' off') + '" data-id="' + esc(p.id) + '"><div class="who"><i class="dot ' + p.orig + '"></i><span>' +
@@ -2014,9 +2599,9 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
 
     var role = $('hud-role'), roleText, roleCls;
     if (!me.team) { roleText = 'Widz'; roleCls = 'out'; }
-    else if (me.orig === 'R' && !me.alive && me.team !== 'H') { roleText = 'Złapany'; roleCls = 'out'; }
-    else if (me.team === 'H') { roleText = 'Łowca'; roleCls = 'H'; }
-    else { roleText = 'Uciekinier'; roleCls = 'R'; }
+    else if (me.orig === 'R' && !me.alive && me.team !== 'H') { roleText = 'Poza grą'; roleCls = 'out'; }
+    else if (me.team === 'H') { roleText = 'Tropiciel'; roleCls = 'H'; }
+    else { roleText = 'Zbieg'; roleCls = 'R'; }
     setText('hud-role', roleText);
     role.className = 'role ' + roleCls;
 
@@ -2024,25 +2609,25 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     hide('countdown', !counting);
     if (counting) {
       setText('countdown-num', String(Math.max(1, Math.ceil(g.toStart / 1000))));
-      setText('countdown-role', me.team === 'H' ? 'Jesteś łowcą' : me.team === 'R' ? 'Jesteś uciekinierem' : 'Oglądasz rundę');
+      setText('countdown-role', me.team === 'H' ? 'Grasz jako tropiciel' : me.team === 'R' ? 'Grasz jako zbieg' : 'Oglądasz rundę');
       $('countdown-role').style.color = COL[me.team] || '#8fa39b';
     }
-    if (g.sub === 'headstart') { setText('hud-time', clock(g.toHunt)); setText('hud-time-label', 'fory'); }
+    if (g.sub === 'headstart') { setText('hud-time', clock(g.toHunt)); setText('hud-time-label', 'na ukrycie'); }
     else { setText('hud-time', clock(g.toEnd)); setText('hud-time-label', 'do końca'); }
     setText('hud-alive', v.counts.alive + '/' + v.counts.runners);
 
     var chips = '';
-    if (g.sub === 'hunt' && g.toPing >= 0) chips += '<span class="hchip">Ping za <b>' + clock(g.toPing) + '</b></span>';
-    if (g.sub === 'hunt' && g.toShrink >= 0) chips += '<span class="hchip">Strefa maleje za <b>' + clock(g.toShrink) + '</b></span>';
+    if (g.sub === 'hunt' && g.toPing >= 0) chips += '<span class="hchip">Namiar za <b>' + clock(g.toPing) + '</b></span>';
+    if (g.sub === 'hunt' && g.toShrink >= 0) chips += '<span class="hchip">Teren maleje za <b>' + clock(g.toShrink) + '</b></span>';
     if (v.conn !== 'online') chips += '<span class="hchip bad">Brak sieci</span>';
     if (me.team && (me.lat == null || me.fixAge > 25)) chips += '<span class="hchip bad">Brak sygnału GPS</span>';
     setHTML('hud-chips', chips);
 
     var banner = '', bad = false;
     var aliveRunner = me.orig === 'R' && me.alive && me.team === 'R';
-    if (aliveRunner && v.zone && v.zone.exposed) { banner = 'Łowcy widzą Cię na żywo – wracaj do strefy!'; bad = true; }
-    else if (aliveRunner && v.zone && v.zone.outside) { banner = 'Poza strefą! Łowcy zobaczą Cię za ' + clock(v.zone.exposeIn); bad = true; }
-    else if (g.sub === 'headstart') banner = me.team === 'H' ? 'Czekaj. Uciekinierzy się chowają.' : me.team === 'R' ? 'Chowaj się! Łowcy ruszą, gdy skończą się fory.' : '';
+    if (aliveRunner && v.zone && v.zone.exposed) { banner = 'Tropiciele widzą Cię na bieżąco – wróć na teren gry!'; bad = true; }
+    else if (aliveRunner && v.zone && v.zone.outside) { banner = 'Jesteś poza terenem! Za ' + clock(v.zone.exposeIn) + ' tropiciele zobaczą Cię na bieżąco.'; bad = true; }
+    else if (g.sub === 'headstart') banner = me.team === 'H' ? 'Zbiegowie się ukrywają – poczekaj na sygnał.' : me.team === 'R' ? 'Ukryj się, zanim ruszą tropiciele!' : '';
     hide('hud-banner', !banner);
     setText('hud-banner', banner);
     $('hud-banner').className = 'banner' + (bad ? ' bad' : '');
@@ -2065,7 +2650,7 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     else unread = Math.max(0, v.chat.length - chatSeen);
     hide('chat-badge', !unread);
     setText('chat-badge', String(unread));
-    setText('chat-title', me.team === 'H' ? 'Czat łowców' : me.team === 'R' ? 'Czat uciekinierów' : 'Czat');
+    setText('chat-title', me.team === 'H' ? 'Czat tropicieli' : me.team === 'R' ? 'Czat zbiegów' : 'Czat');
     if (setHTML('game-chat', chatHTML(v.chat.filter(function (c) { return c.scope !== '*'; }), 'Tylko Twoja drużyna widzi te wiadomości.'))) $('game-chat').scrollTop = 1e6;
     setHTML('quick', (QUICK[me.team] || QUICK['']).map(function (q) { return '<button type="button">' + q + '</button>'; }).join(''));
 
@@ -2086,20 +2671,20 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     var g = v.game, w = g.winner;
     $('end-result').className = 'result ' + (w || '');
     setText('end-round', 'Runda ' + g.round);
-    setText('end-title', w === 'H' ? 'Wygrywają łowcy' : w === 'R' ? 'Wygrywają uciekinierzy' : 'Runda przerwana');
+    setText('end-title', w === 'H' ? 'Wygrywają tropiciele' : w === 'R' ? 'Wygrywają zbiegowie' : 'Runda przerwana');
     var sub = '';
-    if (g.reason === 'caught') sub = 'Wszyscy uciekinierzy zostali złapani.';
-    else if (g.reason === 'time') sub = 'Czas minął. Dotrwało: ' + v.counts.alive + ' z ' + v.counts.runners + '.';
-    else if (g.reason === 'left') sub = 'Uciekinierzy opuścili grę.';
-    else sub = 'Gospodarz zakończył rundę przed czasem.';
-    if (w && v.me.orig) sub += v.me.orig === w ? ' Brawo!' : ' Następnym razem!';
+    if (g.reason === 'caught') sub = 'Tropiciele dopadli wszystkich zbiegów.';
+    else if (g.reason === 'time') sub = 'Czas minął. Do końca przetrwało: ' + v.counts.alive + ' z ' + v.counts.runners + '.';
+    else if (g.reason === 'left') sub = 'Zbiegowie opuścili grę.';
+    else sub = 'Prowadzący zakończył rundę przed czasem.';
+    if (w && v.me.orig) sub += v.me.orig === w ? ' Brawo!' : ' Rewanż?';
     setText('end-sub', sub);
 
     var runners = v.players.filter(function (p) { return p.orig === 'R'; });
     runners.sort(function (a, b) { return (b.alive - a.alive) || ((b.survived || 0) - (a.survived || 0)); });
     setHTML('end-runners', runners.map(function (p) {
       return '<div class="trow"><div class="who"><i class="dot R"></i><span>' + esc(p.name) + (p.me ? ' (ty)' : '') + '</span></div><span class="tag ' +
-        (p.alive ? 'ok">dotrwał do końca' : 'bad">złapany po ' + clock((p.survived || 0) * 1000)) + '</span></div>';
+        (p.alive ? 'ok">do końca' : 'bad">odpada po ' + clock((p.survived || 0) * 1000)) + '</span></div>';
     }).join('') || '<div class="trow"><span class="dim">brak</span></div>');
     setHTML('end-hunters', v.players.filter(function (p) { return p.orig === 'H'; }).map(chip).join('') || '<span class="dim">brak</span>');
 
@@ -2124,6 +2709,32 @@ input[type=range] { width: 100%; accent-color: var(--acid); }
     hide('end-lobby', !v.me.host);
     hide('end-wait', v.me.host);
   }
+
+  // ------------------------------------------------------------------ about, documents, links
+  $('open-about').addEventListener('click', function (e) {
+    e.preventDefault();
+    setText('about-version', bridge.version() ? 'wersja ' + bridge.version() : '');
+    var contact = CFG.contact || '';
+    hide('about-contact', !contact);
+    if (contact) setHTML('about-contact', 'Kontakt: <a href="mailto:' + esc(contact) + '" data-ext>' + esc(contact) + '</a>');
+    setHTML('about-map', window.TileMap && TileMap.attributionHTML ? TileMap.attributionHTML() : '');
+    openSheet('sheet-about');
+  });
+  $('wipe').addEventListener('click', function (e) {
+    confirmTap(e.currentTarget, 'Na pewno? Dotknij jeszcze raz', function () {
+      $('name').value = ''; $('code').value = ''; $('c-age').checked = false; $('c-terms').checked = false;
+      codePrefilled = true;
+      cmd({ cmd: 'wipe' });
+      closeSheets();
+    });
+  });
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a) return;
+    if (a.hasAttribute('data-ext')) { e.preventDefault(); bridge.openUrl(a.href); return; }
+    // Documents open in a new tab on the web, so the game running in this page keeps going.
+    if (a.hasAttribute('data-doc') && WEB) { e.preventDefault(); window.open(a.href, '_blank', 'noopener'); }
+  });
 
   poll1();
 })();
